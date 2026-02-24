@@ -158,11 +158,20 @@ export interface PF2eCharacter {
   items?: PF2eItem[];
 }
 
-// Roll result
+// A single die term from a roll result
+export interface DiceTerm {
+  faces?: number;
+  number?: number;
+  results?: { result: number; active?: boolean }[];
+}
+
+// Roll result — matches POST /roll → data.data.roll
 export interface RollResult {
-  result: number;
-  dice: string;
-  breakdown?: string;
+  formula: string;
+  total: number;
+  isCritical: boolean;
+  isFumble: boolean;
+  dice: DiceTerm[];
 }
 
 // API response wrapper

@@ -21,7 +21,13 @@ export default function SkillsTab({ character }: Props) {
     if (!config.clientId) return;
     try {
       const result = await foundryApi.roll(`1d20${mod >= 0 ? '+' : ''}${mod}`, label);
-      Alert.alert(`${label} Check`, `Roll: ${result.result}\n${result.breakdown ?? ''}`);
+      let critStr = '';
+      if (result.isCritical) {
+        critStr = ' 🎯 Critical!';
+      } else if (result.isFumble) {
+        critStr = ' 💀 Fumble!';
+      }
+      Alert.alert(`${label} Check`, `Roll: ${result.total}${critStr}`);
     } catch (e: unknown) {
       Alert.alert('Roll Error', e instanceof Error ? e.message : 'Failed to roll');
     }

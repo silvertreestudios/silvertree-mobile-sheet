@@ -1,10 +1,13 @@
-// Color palette inspired by Pathbuilder 2e
+// Color palette inspired by Pathbuilder 2e mobile app
 export const Colors = {
-  // Backgrounds
-  background: '#1a1a2e',
-  surface: '#16213e',
-  card: '#0f3460',
-  cardLight: '#1a3a5c',
+  // Backgrounds - dark, non-blue (matches Pathbuilder)
+  background: '#1a1a1a',
+  surface: '#252525',
+  card: '#2a2a2a',
+  cardLight: '#333333',
+
+  // Section/level header (Pathbuilder slate-blue banners)
+  levelHeader: '#2d4a6a',
 
   // Accents
   primary: '#e94560',
@@ -15,7 +18,7 @@ export const Colors = {
   // Text
   textPrimary: '#ffffff',
   textSecondary: '#a0aec0',
-  textMuted: '#718096',
+  textMuted: '#6b7280',
 
   // Status
   positive: '#48bb78',
@@ -29,19 +32,19 @@ export const Colors = {
   hpLow: '#fc8181',
 
   // Ranks
-  untrained: '#718096',
+  untrained: '#4a5568',
   trained: '#63b3ed',
   expert: '#9f7aea',
   master: '#f6ad55',
   legendary: '#e94560',
 
   // Tab bar
-  tabActive: '#e94560',
-  tabInactive: '#718096',
-  tabBackground: '#0d0d1a',
+  tabActive: '#ffffff',
+  tabInactive: '#9ca3af',
+  tabBackground: '#0d0d0d',
 
   // Borders
-  border: '#2d3748',
+  border: '#3a3a3a',
   borderLight: '#4a5568',
 };
 

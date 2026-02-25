@@ -209,14 +209,16 @@ export default function FeatsTab({ character }: Props) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  content: { padding: Spacing.md },
-  section: { marginBottom: Spacing.lg },
+  content: { paddingBottom: Spacing.xl },
+  section: { marginBottom: Spacing.sm },
   sectionTitle: {
-    color: Colors.textMuted,
-    fontSize: FontSize.xs,
-    fontWeight: '700',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
+    backgroundColor: Colors.levelHeader,
+    color: Colors.textPrimary,
+    fontSize: FontSize.md,
+    fontWeight: '600',
+    textAlign: 'center',
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
     marginBottom: Spacing.sm,
   },
   card: {
@@ -224,6 +226,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: Colors.border,
+    marginHorizontal: Spacing.md,
     overflow: 'hidden',
   },
   itemRow: {

@@ -58,67 +58,76 @@ export default function OverviewTab({ character, onRefresh }: Props) {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* HP section */}
-      <View style={styles.hpSection}>
-        <Text style={styles.sectionTitle}>Hit Points</Text>
-        <View style={styles.hpRow}>
-          <TouchableOpacity style={styles.hpBtn} onPress={() => adjustHp(-1)}>
-            <Text style={styles.hpBtnText}>−1</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.hpBtn} onPress={() => adjustHp(-5)}>
-            <Text style={styles.hpBtnText}>−5</Text>
-          </TouchableOpacity>
-          <View style={styles.hpDisplay}>
-            <Text style={styles.hpCurrent}>{hp?.value ?? '—'}</Text>
-            <Text style={styles.hpMax}>/ {hp?.max ?? '—'}</Text>
-            {hp?.temp !== undefined && hp.temp > 0 && (
-              <Text style={styles.hpTemp}>+{hp.temp} temp</Text>
-            )}
+      {/* HP & AC section */}
+      <View style={styles.defenseSection}>
+        {/* AC shield */}
+        <View style={styles.acShieldBlock}>
+          <View style={styles.acShield}>
+            <Text style={styles.acLabel}>AC</Text>
+            <Text style={styles.acValue}>{character.system?.attributes?.ac?.value ?? '—'}</Text>
           </View>
-          <TouchableOpacity style={styles.hpBtn} onPress={() => adjustHp(5)}>
-            <Text style={styles.hpBtnText}>+5</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.hpBtn} onPress={() => adjustHp(1)}>
-            <Text style={styles.hpBtnText}>+1</Text>
-          </TouchableOpacity>
         </View>
-
-        {/* HP bar */}
-        <View style={styles.hpBarBackground}>
-          <View
-            style={[
-              styles.hpBarFill,
-              {
-                width: `${Math.min(100, Math.max(0, ((hp?.value ?? 0) / (hp?.max ?? 1)) * 100))}%`,
-                backgroundColor:
-                  (hp?.value ?? 0) / (hp?.max ?? 1) > 0.5
-                    ? Colors.hpHigh
-                    : (hp?.value ?? 0) / (hp?.max ?? 1) > 0.25
-                    ? Colors.hpMed
-                    : Colors.hpLow,
-              },
-            ]}
-          />
-        </View>
-
-        {/* Dying / Wounded conditions */}
-        {((dying?.value ?? 0) > 0 || (wounded?.value ?? 0) > 0) && (
-          <View style={styles.conditionRow}>
-            {(dying?.value ?? 0) > 0 && (
-              <View style={[styles.conditionBadge, { backgroundColor: Colors.negative }]}>
-                <Text style={styles.conditionText}>
-                  Dying {dying?.value}/{dying?.max ?? 4}
-                </Text>
-              </View>
-            )}
-            {(wounded?.value ?? 0) > 0 && (
-              <View style={[styles.conditionBadge, { backgroundColor: Colors.warning }]}>
-                <Text style={styles.conditionText}>Wounded {wounded?.value}</Text>
-              </View>
-            )}
+        {/* HP display */}
+        <View style={styles.hpBlock}>
+          <Text style={styles.hpLabel}>HP</Text>
+          <View style={styles.hpRow}>
+            <TouchableOpacity style={styles.hpBtn} onPress={() => adjustHp(-5)}>
+              <Text style={styles.hpBtnText}>−5</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.hpBtn} onPress={() => adjustHp(-1)}>
+              <Text style={styles.hpBtnText}>−1</Text>
+            </TouchableOpacity>
+            <Text style={styles.hpDisplay}>
+              <Text style={styles.hpCurrent}>{hp?.value ?? '—'}</Text>
+              <Text style={styles.hpMax}>/{hp?.max ?? '—'}</Text>
+              {hp?.temp !== undefined && hp.temp > 0 && (
+                <Text style={styles.hpTemp}> +{hp.temp}</Text>
+              )}
+            </Text>
+            <TouchableOpacity style={styles.hpBtn} onPress={() => adjustHp(1)}>
+              <Text style={styles.hpBtnText}>+1</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.hpBtn} onPress={() => adjustHp(5)}>
+              <Text style={styles.hpBtnText}>+5</Text>
+            </TouchableOpacity>
           </View>
-        )}
+          {/* HP bar */}
+          <View style={styles.hpBarBackground}>
+            <View
+              style={[
+                styles.hpBarFill,
+                {
+                  width: `${Math.min(100, Math.max(0, ((hp?.value ?? 0) / (hp?.max ?? 1)) * 100))}%`,
+                  backgroundColor:
+                    (hp?.value ?? 0) / (hp?.max ?? 1) > 0.5
+                      ? Colors.hpHigh
+                      : (hp?.value ?? 0) / (hp?.max ?? 1) > 0.25
+                      ? Colors.hpMed
+                      : Colors.hpLow,
+                },
+              ]}
+            />
+          </View>
+        </View>
       </View>
+
+      {/* Dying / Wounded conditions */}
+      {((dying?.value ?? 0) > 0 || (wounded?.value ?? 0) > 0) && (
+        <View style={styles.conditionRow}>
+          {(dying?.value ?? 0) > 0 && (
+            <View style={[styles.conditionBadge, { backgroundColor: Colors.negative }]}>
+              <Text style={styles.conditionText}>
+                Dying {dying?.value}/{dying?.max ?? 4}
+              </Text>
+            </View>
+          )}
+          {(wounded?.value ?? 0) > 0 && (
+            <View style={[styles.conditionBadge, { backgroundColor: Colors.warning }]}>
+              <Text style={styles.conditionText}>Wounded {wounded?.value}</Text>
+            </View>
+          )}
+        </View>
+      )}
 
       {/* Shield */}
       {shield && (
@@ -241,42 +250,80 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     marginBottom: Spacing.sm,
   },
-  hpSection: {
+  // Defense: AC shield + HP side by side
+  defenseSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: Colors.card,
     borderRadius: 10,
     padding: Spacing.md,
     marginBottom: Spacing.lg,
     borderWidth: 1,
     borderColor: Colors.border,
+    gap: Spacing.md,
+  },
+  acShieldBlock: {
+    alignItems: 'center',
+  },
+  acShield: {
+    width: 56,
+    height: 64,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: Colors.info,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.surface,
+  },
+  acLabel: {
+    color: Colors.textMuted,
+    fontSize: FontSize.xs,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  acValue: {
+    color: Colors.textPrimary,
+    fontSize: FontSize.xxl,
+    fontWeight: 'bold',
+    lineHeight: FontSize.xxl + 4,
+  },
+  hpBlock: {
+    flex: 1,
+  },
+  hpLabel: {
+    color: Colors.textMuted,
+    fontSize: FontSize.xs,
+    fontWeight: '700',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginBottom: Spacing.xs,
   },
   hpRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     marginBottom: Spacing.sm,
   },
   hpBtn: {
     backgroundColor: Colors.surface,
     borderRadius: 6,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    margin: Spacing.xs,
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
+    margin: 2,
     borderWidth: 1,
     borderColor: Colors.border,
   },
   hpBtnText: {
     color: Colors.textPrimary,
-    fontSize: FontSize.md,
+    fontSize: FontSize.sm,
     fontWeight: '600',
   },
   hpDisplay: {
-    alignItems: 'center',
-    marginHorizontal: Spacing.md,
-    minWidth: 100,
+    flex: 1,
+    textAlign: 'center',
   },
   hpCurrent: {
     color: Colors.textPrimary,
-    fontSize: FontSize.xxxl,
+    fontSize: FontSize.xl,
     fontWeight: 'bold',
   },
   hpMax: {
@@ -288,20 +335,20 @@ const styles = StyleSheet.create({
     fontSize: FontSize.xs,
   },
   hpBarBackground: {
-    height: 8,
+    height: 6,
     backgroundColor: Colors.surface,
-    borderRadius: 4,
+    borderRadius: 3,
     overflow: 'hidden',
-    marginTop: Spacing.xs,
   },
   hpBarFill: {
     height: '100%',
-    borderRadius: 4,
+    borderRadius: 3,
   },
   conditionRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: Spacing.sm,
+    marginHorizontal: Spacing.md,
+    marginBottom: Spacing.sm,
     gap: Spacing.xs,
   },
   conditionBadge: {

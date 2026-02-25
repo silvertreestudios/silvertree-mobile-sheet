@@ -14,7 +14,7 @@ export default function RootNavigator() {
       initialRouteName="Settings"
       screenOptions={{
         headerStyle: {
-          backgroundColor: Colors.surface,
+          backgroundColor: '#0d0d0d',
         },
         headerTintColor: Colors.textPrimary,
         headerTitleStyle: {
@@ -40,10 +40,13 @@ export default function RootNavigator() {
       <Stack.Screen
         name="CharacterSheet"
         component={CharacterSheetScreen}
-        options={({ route }) => ({
-          title: route.params.character.name,
-          headerBackTitle: 'Characters',
-        })}
+        options={({ route }) => {
+          const char = route.params.character;
+          const cls = char.system?.details?.class?.value ?? '';
+          const level = char.system?.details?.level?.value ?? 1;
+          const title = cls ? `${char.name} - ${cls} ${level}` : char.name;
+          return { title, headerBackTitle: 'Back' };
+        }}
       />
     </Stack.Navigator>
   );

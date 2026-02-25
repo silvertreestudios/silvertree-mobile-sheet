@@ -26,11 +26,11 @@ type ScreenProps = NativeStackScreenProps<RootStackParamList, 'CharacterSheet'>;
 type TabKey = 'overview' | 'abilities' | 'skills' | 'feats' | 'inventory';
 
 const TABS: { key: TabKey; label: string }[] = [
-  { key: 'overview', label: 'Overview' },
+  { key: 'overview', label: 'Defense' },
   { key: 'abilities', label: 'Abilities' },
   { key: 'skills', label: 'Skills' },
-  { key: 'feats', label: 'Feats' },
-  { key: 'inventory', label: 'Inventory' },
+  { key: 'feats', label: 'Features' },
+  { key: 'inventory', label: 'Gear' },
 ];
 
 export default function CharacterSheetScreen({ route }: ScreenProps) {
@@ -89,7 +89,6 @@ export default function CharacterSheetScreen({ route }: ScreenProps) {
               >
                 {tab.label}
               </Text>
-              {activeTab === tab.key && <View style={styles.tabIndicator} />}
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -129,15 +128,21 @@ const styles = StyleSheet.create({
   },
   tabScroll: {
     paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
   },
   tab: {
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    paddingVertical: Spacing.xs,
     marginHorizontal: Spacing.xs,
-    position: 'relative',
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: 'transparent',
     alignItems: 'center',
   },
-  tabActive: {},
+  tabActive: {
+    borderColor: Colors.tabInactive,
+    backgroundColor: Colors.surface,
+  },
   tabText: {
     color: Colors.tabInactive,
     fontSize: FontSize.sm,
@@ -146,15 +151,6 @@ const styles = StyleSheet.create({
   tabTextActive: {
     color: Colors.tabActive,
     fontWeight: '700',
-  },
-  tabIndicator: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 2,
-    backgroundColor: Colors.tabActive,
-    borderRadius: 1,
   },
   content: {
     flex: 1,

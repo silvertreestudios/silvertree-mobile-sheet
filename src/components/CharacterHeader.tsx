@@ -16,17 +16,10 @@ function getHpColor(current: number, max: number): string {
 }
 
 export default function CharacterHeader({ character }: CharacterHeaderProps) {
-  const details = character.system?.details;
   const attrs = character.system?.attributes;
   const hp = attrs?.hp;
   const ac = attrs?.ac;
   const heroPoints = attrs?.heroPoints;
-
-  const ancestry = details?.ancestry?.value ?? '';
-  const heritage = details?.heritage?.value ?? '';
-  const cls = details?.class?.value ?? '';
-  const level = details?.level?.value ?? 1;
-  const subTitle = [ancestry, heritage, cls].filter(Boolean).join(' ');
 
   const hpCurrent = hp?.value ?? 0;
   const hpMax = hp?.max ?? 0;
@@ -34,128 +27,97 @@ export default function CharacterHeader({ character }: CharacterHeaderProps) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.nameRow}>
-        <View style={styles.nameBlock}>
-          <Text style={styles.name} numberOfLines={1}>
-            {character.name}
-          </Text>
-          {subTitle ? (
-            <Text style={styles.subtitle} numberOfLines={1}>
-              {subTitle}
+      {/* AC shield */}
+      <View style={styles.acBlock}>
+        <View style={styles.acShield}>
+          <Text style={styles.acLabel}>AC</Text>
+          <Text style={styles.acValue}>{ac?.value ?? '—'}</Text>
+        </View>
+      </View>
+
+      <View style={styles.divider} />
+
+      {/* HP */}
+      <View style={styles.statBlock}>
+        <Text style={styles.statLabel}>HP</Text>
+        <Text style={[styles.statValue, { color: hpColor }]}>
+          {hpCurrent}
+          <Text style={styles.statMax}>/{hpMax}</Text>
+        </Text>
+      </View>
+
+      <View style={styles.divider} />
+
+      {/* Perception */}
+      <View style={styles.statBlock}>
+        <Text style={styles.statLabel}>PERC</Text>
+        <Text style={styles.statValue}>
+          {attrs?.perception?.totalModifier !== undefined
+            ? (attrs.perception.totalModifier >= 0
+                ? `+${attrs.perception.totalModifier}`
+                : `${attrs.perception.totalModifier}`)
+            : '—'}
+        </Text>
+      </View>
+
+      <View style={styles.divider} />
+
+      {/* Speed */}
+      <View style={styles.statBlock}>
+        <Text style={styles.statLabel}>SPD</Text>
+        <Text style={styles.statValue}>{attrs?.speed?.value ?? '—'}</Text>
+      </View>
+
+      {heroPoints !== undefined && (
+        <>
+          <View style={styles.divider} />
+          <View style={styles.statBlock}>
+            <Text style={styles.statLabel}>HERO</Text>
+            <Text style={[styles.statValue, { color: Colors.gold }]}>
+              {heroPoints.value ?? 0}
             </Text>
-          ) : null}
-        </View>
-        <View style={styles.levelBadge}>
-          <Text style={styles.levelLabel}>LVL</Text>
-          <Text style={styles.levelValue}>{level}</Text>
-        </View>
-      </View>
-
-      <View style={styles.statsRow}>
-        {/* HP */}
-        <View style={styles.statBlock}>
-          <Text style={styles.statLabel}>HP</Text>
-          <Text style={[styles.statValue, { color: hpColor }]}>
-            {hpCurrent}
-          </Text>
-          <Text style={styles.statMax}>/ {hpMax}</Text>
-        </View>
-
-        <View style={styles.divider} />
-
-        {/* AC */}
-        <View style={styles.statBlock}>
-          <Text style={styles.statLabel}>AC</Text>
-          <Text style={styles.statValue}>{ac?.value ?? '—'}</Text>
-        </View>
-
-        <View style={styles.divider} />
-
-        {/* Perception */}
-        <View style={styles.statBlock}>
-          <Text style={styles.statLabel}>PERC</Text>
-          <Text style={styles.statValue}>
-            {attrs?.perception?.totalModifier !== undefined
-              ? (attrs.perception.totalModifier >= 0
-                  ? `+${attrs.perception.totalModifier}`
-                  : `${attrs.perception.totalModifier}`)
-              : '—'}
-          </Text>
-        </View>
-
-        <View style={styles.divider} />
-
-        {/* Speed */}
-        <View style={styles.statBlock}>
-          <Text style={styles.statLabel}>SPD</Text>
-          <Text style={styles.statValue}>{attrs?.speed?.value ?? '—'}</Text>
-        </View>
-
-        {heroPoints !== undefined && (
-          <>
-            <View style={styles.divider} />
-            <View style={styles.statBlock}>
-              <Text style={styles.statLabel}>HERO</Text>
-              <Text style={[styles.statValue, { color: Colors.gold }]}>
-                {heroPoints.value ?? 0}
-              </Text>
-            </View>
-          </>
-        )}
-      </View>
+          </View>
+        </>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: Colors.surface,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
-  nameRow: {
-    flexDirection: 'row',
+  acBlock: {
     alignItems: 'center',
-    marginBottom: Spacing.sm,
+    marginRight: Spacing.xs,
   },
-  nameBlock: {
-    flex: 1,
-  },
-  name: {
-    color: Colors.textPrimary,
-    fontSize: FontSize.xl,
-    fontWeight: 'bold',
-  },
-  subtitle: {
-    color: Colors.textSecondary,
-    fontSize: FontSize.sm,
-    marginTop: 2,
-  },
-  levelBadge: {
-    backgroundColor: Colors.primary,
+  acShield: {
+    width: 44,
+    height: 44,
     borderRadius: 8,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
+    borderWidth: 2,
+    borderColor: Colors.info,
     alignItems: 'center',
-    minWidth: 48,
+    justifyContent: 'center',
+    backgroundColor: Colors.card,
   },
-  levelLabel: {
-    color: Colors.textPrimary,
-    fontSize: FontSize.xs,
+  acLabel: {
+    color: Colors.textMuted,
+    fontSize: 8,
     fontWeight: '700',
-    letterSpacing: 1,
+    letterSpacing: 0.5,
   },
-  levelValue: {
+  acValue: {
     color: Colors.textPrimary,
-    fontSize: FontSize.xl,
+    fontSize: FontSize.lg,
     fontWeight: 'bold',
-    lineHeight: FontSize.xl + 4,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    lineHeight: FontSize.lg + 2,
   },
   statBlock: {
     flex: 1,
@@ -174,7 +136,8 @@ const styles = StyleSheet.create({
   },
   statMax: {
     color: Colors.textMuted,
-    fontSize: FontSize.xs,
+    fontSize: FontSize.sm,
+    fontWeight: 'normal',
   },
   divider: {
     width: 1,

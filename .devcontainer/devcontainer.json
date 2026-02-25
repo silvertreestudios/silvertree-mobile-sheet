@@ -1,0 +1,5 @@
+{
+  "name": "silvertree-mobile-sheet",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "postCreateCommand": "npm install --legacy-peer-deps"
+}

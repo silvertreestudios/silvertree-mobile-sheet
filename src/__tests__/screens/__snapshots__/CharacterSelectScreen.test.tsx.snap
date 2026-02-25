@@ -1,0 +1,177 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CharacterSelectScreen renders correctly 1`] = `
+<View
+  style={
+    {
+      "backgroundColor": "#1a1a2e",
+      "flex": 1,
+    }
+  }
+>
+  <View
+    style={
+      {
+        "borderBottomColor": "#2d3748",
+        "borderBottomWidth": 1,
+        "paddingHorizontal": 16,
+        "paddingVertical": 12,
+      }
+    }
+  >
+    <Text
+      style={
+        {
+          "color": "#ffffff",
+          "fontSize": 20,
+          "fontWeight": "bold",
+        }
+      }
+    >
+      Select Character
+    </Text>
+    <Text
+      style={
+        {
+          "color": "#718096",
+          "fontSize": 10,
+          "marginTop": 2,
+        }
+      }
+    >
+      No world connected
+    </Text>
+  </View>
+  <View
+    style={
+      {
+        "backgroundColor": "#2d1515",
+        "borderColor": "#fc8181",
+        "borderRadius": 8,
+        "borderWidth": 1,
+        "margin": 16,
+        "padding": 12,
+      }
+    }
+  >
+    <Text
+      style={
+        {
+          "color": "#fc8181",
+          "fontSize": 12,
+        }
+      }
+    >
+      No Foundry world selected. Go to Settings and select a world first.
+    </Text>
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "marginTop": 8,
+          "opacity": 1,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#63b3ed",
+            "fontSize": 12,
+          }
+        }
+      >
+        Go to Settings →
+      </Text>
+    </View>
+  </View>
+  <View
+    style={
+      {
+        "padding": 12,
+      }
+    }
+    testID="FlatList"
+  >
+    <RCTRefreshControl />
+  </View>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#16213e",
+        "borderColor": "#2d3748",
+        "borderRadius": 8,
+        "borderWidth": 1,
+        "margin": 16,
+        "opacity": 1,
+        "padding": 12,
+      }
+    }
+  >
+    <Text
+      style={
+        {
+          "color": "#a0aec0",
+          "fontSize": 14,
+        }
+      }
+    >
+      ⚙️  Settings
+    </Text>
+  </View>
+</View>
+`;

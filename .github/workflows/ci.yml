@@ -34,3 +34,7 @@ jobs:
 
       - name: Run unit tests
         run: npm run test:ci
+
+      - name: Run snapshot tests
+        run: npm run test:snapshot
+        continue-on-error: true

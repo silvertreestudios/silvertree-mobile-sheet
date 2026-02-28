@@ -39,9 +39,9 @@ export const mockCharacter: PF2eCharacter = {
       will: { value: 8, totalModifier: 8 },
     },
     skills: {
-      acr: { value: 2, totalModifier: 4, rank: 1 },
-      ath: { value: 6, totalModifier: 10, rank: 2 },
-      ste: { value: 2, totalModifier: 4, rank: 1 },
+      acrobatics: { value: 2, totalModifier: 4, rank: 1 },
+      athletics: { value: 6, totalModifier: 10, rank: 2 },
+      stealth: { value: 2, totalModifier: 4, rank: 1 },
     },
     currency: {
       gp: 50,

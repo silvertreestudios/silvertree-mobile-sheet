@@ -8,13 +8,6 @@ import SkillsTab from '../../screens/CharacterSheet/SkillsTab';
 import FeatsTab from '../../screens/CharacterSheet/FeatsTab';
 import InventoryTab from '../../screens/CharacterSheet/InventoryTab';
 
-const mockConfig = {
-  apiKey: 'test-key',
-  relayUrl: 'https://foundryvtt-rest-api-relay.fly.dev',
-  clientId: 'test-client',
-  actorUuid: 'Actor.test',
-};
-
 jest.mock('@react-navigation/native', () => ({
   useNavigation: () => ({ navigate: jest.fn(), goBack: jest.fn() }),
   useRoute: () => ({ params: { character: mockCharacter } }),

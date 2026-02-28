@@ -4547,18 +4547,318 @@ exports[`SkillsTab renders correctly 1`] = `
           }
         }
       >
-        <Text
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
           style={
             {
-              "color": "#718096",
-              "fontSize": 12,
-              "padding": 16,
-              "textAlign": "center",
+              "opacity": 1,
             }
           }
         >
-          No skill data available.
-        </Text>
+          <View
+            style={
+              {
+                "alignItems": "center",
+                "borderBottomColor": "#2d3748",
+                "borderBottomWidth": 1,
+                "flexDirection": "row",
+                "paddingHorizontal": 12,
+                "paddingVertical": 8,
+              }
+            }
+          >
+            <View
+              style={
+                [
+                  {
+                    "borderRadius": 4,
+                    "height": 8,
+                    "marginRight": 8,
+                    "width": 8,
+                  },
+                  {
+                    "backgroundColor": "#63b3ed",
+                  },
+                ]
+              }
+            />
+            <Text
+              style={
+                {
+                  "color": "#ffffff",
+                  "flex": 1,
+                  "fontSize": 14,
+                }
+              }
+            >
+              Acrobatics
+            </Text>
+            <Text
+              style={
+                {
+                  "color": "#718096",
+                  "fontSize": 10,
+                  "marginRight": 12,
+                  "textAlign": "right",
+                  "width": 72,
+                }
+              }
+            >
+              Trained
+            </Text>
+            <Text
+              style={
+                [
+                  {
+                    "fontSize": 14,
+                    "fontWeight": "bold",
+                    "textAlign": "right",
+                    "width": 36,
+                  },
+                  {
+                    "color": "#48bb78",
+                  },
+                ]
+              }
+            >
+              +4
+            </Text>
+          </View>
+        </View>
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "opacity": 1,
+            }
+          }
+        >
+          <View
+            style={
+              {
+                "alignItems": "center",
+                "borderBottomColor": "#2d3748",
+                "borderBottomWidth": 1,
+                "flexDirection": "row",
+                "paddingHorizontal": 12,
+                "paddingVertical": 8,
+              }
+            }
+          >
+            <View
+              style={
+                [
+                  {
+                    "borderRadius": 4,
+                    "height": 8,
+                    "marginRight": 8,
+                    "width": 8,
+                  },
+                  {
+                    "backgroundColor": "#9f7aea",
+                  },
+                ]
+              }
+            />
+            <Text
+              style={
+                {
+                  "color": "#ffffff",
+                  "flex": 1,
+                  "fontSize": 14,
+                }
+              }
+            >
+              Athletics
+            </Text>
+            <Text
+              style={
+                {
+                  "color": "#718096",
+                  "fontSize": 10,
+                  "marginRight": 12,
+                  "textAlign": "right",
+                  "width": 72,
+                }
+              }
+            >
+              Expert
+            </Text>
+            <Text
+              style={
+                [
+                  {
+                    "fontSize": 14,
+                    "fontWeight": "bold",
+                    "textAlign": "right",
+                    "width": 36,
+                  },
+                  {
+                    "color": "#48bb78",
+                  },
+                ]
+              }
+            >
+              +10
+            </Text>
+          </View>
+        </View>
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "opacity": 1,
+            }
+          }
+        >
+          <View
+            style={
+              {
+                "alignItems": "center",
+                "borderBottomColor": "#2d3748",
+                "borderBottomWidth": 1,
+                "flexDirection": "row",
+                "paddingHorizontal": 12,
+                "paddingVertical": 8,
+              }
+            }
+          >
+            <View
+              style={
+                [
+                  {
+                    "borderRadius": 4,
+                    "height": 8,
+                    "marginRight": 8,
+                    "width": 8,
+                  },
+                  {
+                    "backgroundColor": "#63b3ed",
+                  },
+                ]
+              }
+            />
+            <Text
+              style={
+                {
+                  "color": "#ffffff",
+                  "flex": 1,
+                  "fontSize": 14,
+                }
+              }
+            >
+              Stealth
+            </Text>
+            <Text
+              style={
+                {
+                  "color": "#718096",
+                  "fontSize": 10,
+                  "marginRight": 12,
+                  "textAlign": "right",
+                  "width": 72,
+                }
+              }
+            >
+              Trained
+            </Text>
+            <Text
+              style={
+                [
+                  {
+                    "fontSize": 14,
+                    "fontWeight": "bold",
+                    "textAlign": "right",
+                    "width": 36,
+                  },
+                  {
+                    "color": "#48bb78",
+                  },
+                ]
+              }
+            >
+              +4
+            </Text>
+          </View>
+        </View>
       </View>
     </View>
   </View>

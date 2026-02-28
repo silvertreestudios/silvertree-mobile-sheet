@@ -54,7 +54,7 @@ jest.mock('react-native/Libraries/Lists/SectionList', () => {
       allSections.map(function (section, sIdx) {
         return React.createElement(
           View,
-          { key: sIdx },
+          { key: section.title ?? String(sIdx) },
           props.renderSectionHeader ? props.renderSectionHeader({ section }) : null,
           (section.data || []).map(function (item, iIdx) {
             const el = props.renderItem({ item, index: iIdx, section });

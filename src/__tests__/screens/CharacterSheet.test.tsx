@@ -48,10 +48,26 @@ const mockRoute = {
   params: { character: mockCharacter },
 };
 
+const mockNavigation = {
+  navigate: jest.fn(),
+  goBack: jest.fn(),
+  dispatch: jest.fn(),
+  reset: jest.fn(),
+  canGoBack: jest.fn(),
+  isFocused: jest.fn(),
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
+  setOptions: jest.fn(),
+  setParams: jest.fn(),
+  getId: jest.fn(),
+  getParent: jest.fn(),
+  getState: jest.fn(),
+};
+
 describe('CharacterSheetScreen', () => {
   it('renders correctly (default Overview tab)', () => {
     const { toJSON } = render(
-      <CharacterSheetScreen route={mockRoute as any} />
+      <CharacterSheetScreen route={mockRoute as any} navigation={mockNavigation as any} />
     );
     expect(toJSON()).toMatchSnapshot();
   });

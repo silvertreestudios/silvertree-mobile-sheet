@@ -60,6 +60,18 @@ On first launch, enter:
 2. **API Key** – obtain from the relay dashboard after creating an account
 3. **Foundry World** – tap "Refresh" to see connected worlds, then select yours
 
+## CI Checks
+
+The following checks run in CI and **must pass** before any PR can be merged. Run them locally before submitting or requesting review:
+
+```bash
+# TypeScript type-check
+npm run typecheck
+
+# Unit tests (with coverage)
+npm run test:ci
+```
+
 ## API
 
 The app communicates with the [FoundryVTT REST API Relay](https://foundryvtt-rest-api-relay.fly.dev/docs/api) using the following endpoints:

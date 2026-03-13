@@ -9,7 +9,6 @@ const SKILL_ABILITY: Record<string, string> = {
 };
 
 type AbilityKey = 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha';
-const ALL_ABILITIES: AbilityKey[] = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ItemSystem = any;
@@ -288,4 +287,10 @@ export function getHeroPoints(character: PF2eCharacter): {
   const hp = fromResources?.heroPoints ?? fromAttrs;
   if (!hp) return undefined;
   return { value: hp.value ?? 0, max: hp.max ?? 3 };
+}
+
+/** Format a number as a signed modifier string (e.g. +4, -1, or — for undefined). */
+export function formatMod(n: number | undefined | null): string {
+  if (n === undefined || n === null) return '—';
+  return n >= 0 ? `+${n}` : `${n}`;
 }

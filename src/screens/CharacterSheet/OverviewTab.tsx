@@ -17,16 +17,12 @@ import {
   extractCurrency,
   getHeroPoints,
   computeCharacterStats,
+  formatMod,
 } from '../../utils/characterUtils';
 
 interface Props {
   character: PF2eCharacter;
   onRefresh: () => void;
-}
-
-function formatMod(n: number | undefined): string {
-  if (n === undefined || n === null) return '—';
-  return n >= 0 ? `+${n}` : `${n}`;
 }
 
 export default function OverviewTab({ character, onRefresh }: Props) {
@@ -94,24 +90,26 @@ export default function OverviewTab({ character, onRefresh }: Props) {
         </View>
 
         {/* HP bar — only show when max HP is known */}
-        {(hp?.max ?? computed?.hpMax) !== undefined && (hp?.max ?? computed?.hpMax ?? 0) > 0 && (
+        {(() => {
+          const hpMax = hp?.max ?? computed?.hpMax ?? 0;
+          const hpCurrent = hp?.value ?? 0;
+          const hpPct = hpMax > 0 ? hpCurrent / hpMax : 0;
+          const hpColor = hpPct > 0.5 ? Colors.hpHigh : hpPct > 0.25 ? Colors.hpMed : Colors.hpLow;
+          if (hpMax <= 0) return null;
+          return (
           <View style={styles.hpBarBackground}>
             <View
               style={[
                 styles.hpBarFill,
                 {
-                  width: `${Math.min(100, Math.max(0, ((hp?.value ?? 0) / (hp?.max ?? computed?.hpMax ?? 1)) * 100))}%`,
-                  backgroundColor:
-                    (hp?.value ?? 0) / (hp?.max ?? computed?.hpMax ?? 1) > 0.5
-                      ? Colors.hpHigh
-                      : (hp?.value ?? 0) / (hp?.max ?? computed?.hpMax ?? 1) > 0.25
-                      ? Colors.hpMed
-                      : Colors.hpLow,
+                  width: `${Math.min(100, Math.max(0, hpPct * 100))}%`,
+                  backgroundColor: hpColor,
                 },
               ]}
             />
           </View>
-        )}
+          );
+        })()}
 
         {/* Dying / Wounded conditions */}
         {((dying?.value ?? 0) > 0 || (wounded?.value ?? 0) > 0) && (

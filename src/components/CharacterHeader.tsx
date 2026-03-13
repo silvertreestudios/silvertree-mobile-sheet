@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Colors, FontSize, Spacing } from '../utils/theme';
 import { PF2eCharacter } from '../types';
-import { extractCharacterDetails, getHeroPoints, computeCharacterStats } from '../utils/characterUtils';
+import { extractCharacterDetails, getHeroPoints, computeCharacterStats, formatMod } from '../utils/characterUtils';
 
 interface CharacterHeaderProps {
   character: PF2eCharacter;
@@ -14,11 +14,6 @@ function getHpColor(current: number, max: number): string {
   if (pct > 0.5) return Colors.hpHigh;
   if (pct > 0.25) return Colors.hpMed;
   return Colors.hpLow;
-}
-
-function fmtMod(n: number | undefined): string {
-  if (n === undefined) return '—';
-  return n >= 0 ? `+${n}` : `${n}`;
 }
 
 export default function CharacterHeader({ character }: CharacterHeaderProps) {
@@ -81,8 +76,8 @@ export default function CharacterHeader({ character }: CharacterHeaderProps) {
           <Text style={styles.statLabel}>PERC</Text>
           <Text style={styles.statValue}>
             {attrs?.perception?.totalModifier !== undefined
-              ? fmtMod(attrs.perception.totalModifier)
-              : fmtMod(computed?.perception)}
+              ? formatMod(attrs.perception.totalModifier)
+              : formatMod(computed?.perception)}
           </Text>
         </View>
 

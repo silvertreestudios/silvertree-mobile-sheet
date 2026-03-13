@@ -55,7 +55,7 @@ services:
       RELAY_URL: ${RELAY_URL:-ws://relay:3010/}
       RELAY_API_KEY: ${RELAY_API_KEY:-}
       # felddy/foundryvtt specific
-      FOUNDRY_ADMIN_KEY: admin
+      FOUNDRY_ADMIN_KEY: ${FOUNDRY_ADMIN_KEY:-admin}
       CONTAINER_PRESERVE_CONFIG: "true"
     volumes:
       - foundryvtt-data:/data

@@ -10,3 +10,6 @@ RUN npm install -g node-gyp@latest \
     && cd /app/node_modules/.pnpm/sqlite3@5.1.7/node_modules/sqlite3 \
     && node-gyp rebuild \
     && npm uninstall -g node-gyp
+
+# Drop back to non-root for runtime
+USER node

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Colors, FontSize, Spacing, ABILITY_LABELS } from '../../utils/theme';
 import { PF2eCharacter } from '../../types';
 import StatBox from '../../components/StatBox';
+import { computeCharacterStats } from '../../utils/characterUtils';
 
 interface Props {
   character: PF2eCharacter;
@@ -17,34 +18,63 @@ function formatMod(n: number): string {
 }
 
 export default function AbilitiesTab({ character }: Props) {
-  const abilities = character.system?.abilities ?? {};
-  const abilityKeys = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
+  const abilities = character.system?.abilities;
+  const abilityKeys = ['str', 'dex', 'con', 'int', 'wis', 'cha'] as const;
+  const hasAbilityData = abilities !== null && abilities !== undefined && Object.keys(abilities).length > 0;
+  const computed = computeCharacterStats(character);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Ability Scores</Text>
-        <View style={styles.abilityGrid}>
-          {abilityKeys.map((key) => {
-            const ability = abilities[key as keyof typeof abilities];
-            const score = ability?.value ?? 10;
-            const mod = ability?.mod ?? abilityMod(score);
-            return (
+        {hasAbilityData ? (
+          <View style={styles.abilityGrid}>
+            {abilityKeys.map((key) => {
+              const ability = (abilities as Record<string, { value?: number; mod?: number }>)[key];
+              const score = ability?.value ?? 10;
+              const mod = ability?.mod ?? abilityMod(score);
+              return (
+                <View key={key} style={styles.abilityCard}>
+                  <Text style={styles.abilityLabel}>{ABILITY_LABELS[key]}</Text>
+                  <Text style={styles.abilityScore}>{score}</Text>
+                  <Text
+                    style={[
+                      styles.abilityMod,
+                      { color: mod >= 0 ? Colors.positive : Colors.negative },
+                    ]}
+                  >
+                    {formatMod(mod)}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
+        ) : computed ? (
+          <View style={styles.abilityGrid}>
+            {abilityKeys.map((key) => {
+              const mod = computed.abilityMods[key];
+              return (
+                <View key={key} style={styles.abilityCard}>
+                  <Text style={styles.abilityLabel}>{ABILITY_LABELS[key]}</Text>
+                  <Text style={styles.abilityScore}>
+                    {mod >= 0 ? `+${mod}` : `${mod}`}
+                  </Text>
+                  <Text style={[styles.abilityMod, { color: Colors.textMuted }]}>MOD</Text>
+                </View>
+              );
+            })}
+          </View>
+        ) : (
+          <View style={styles.abilityGrid}>
+            {abilityKeys.map((key) => (
               <View key={key} style={styles.abilityCard}>
                 <Text style={styles.abilityLabel}>{ABILITY_LABELS[key]}</Text>
-                <Text style={styles.abilityScore}>{score}</Text>
-                <Text
-                  style={[
-                    styles.abilityMod,
-                    { color: mod >= 0 ? Colors.positive : Colors.negative },
-                  ]}
-                >
-                  {formatMod(mod)}
-                </Text>
+                <Text style={styles.abilityScore}>—</Text>
+                <Text style={[styles.abilityMod, { color: Colors.textMuted }]}>—</Text>
               </View>
-            );
-          })}
-        </View>
+            ))}
+          </View>
+        )}
       </View>
     </ScrollView>
   );
@@ -93,5 +123,12 @@ const styles = StyleSheet.create({
   abilityMod: {
     fontSize: FontSize.lg,
     fontWeight: '600',
+  },
+  unavailableNote: {
+    color: Colors.textMuted,
+    fontSize: FontSize.xs,
+    textAlign: 'center',
+    marginTop: Spacing.sm,
+    fontStyle: 'italic',
   },
 });

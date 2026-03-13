@@ -5,6 +5,7 @@ import { PF2eCharacter } from '../../types';
 import SkillRow from '../../components/SkillRow';
 import foundryApi from '../../api/foundryApi';
 import { useApp } from '../../contexts/AppContext';
+import { computeCharacterStats } from '../../utils/characterUtils';
 
 interface Props {
   character: PF2eCharacter;
@@ -14,6 +15,7 @@ export default function SkillsTab({ character }: Props) {
   const { config } = useApp();
   const skills = character.system?.skills ?? {};
   const perception = character.system?.attributes?.perception;
+  const computed = computeCharacterStats(character);
 
   const skillKeys = Object.keys(SKILL_LABELS).sort();
 
@@ -33,22 +35,26 @@ export default function SkillsTab({ character }: Props) {
     }
   }
 
+  // Resolve perception: prefer API data, fall back to computed
+  const percMod = perception?.totalModifier ?? computed?.perception;
+  const percRank = computed?.perceptionRank ?? 0;
+
   return (
     <ScrollView style={styles.container}>
       {/* Perception at the top */}
-      {perception !== undefined && (
+      {percMod !== undefined && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Perception</Text>
           <View style={styles.card}>
             <SkillRow
               label="Perception"
-              modifier={perception.totalModifier ?? 0}
-              rank={0}
+              modifier={percMod}
+              rank={percRank}
               onPress={() =>
                 handleRollSkill(
                   'perception',
                   'Perception',
-                  perception.totalModifier ?? 0
+                  percMod,
                 )
               }
             />
@@ -60,11 +66,12 @@ export default function SkillsTab({ character }: Props) {
         <Text style={styles.sectionTitle}>Skills</Text>
         <View style={styles.card}>
           {skillKeys.map((key) => {
-            const skill = skills[key];
-            if (!skill) return null;
+            const apiSkill = skills[key];
+            const computedSkill = computed?.skills[key];
+            const mod = apiSkill?.totalModifier ?? apiSkill?.mod ?? apiSkill?.value ?? computedSkill?.mod;
+            const rank = apiSkill?.rank ?? computedSkill?.rank ?? 0;
+            if (mod === undefined) return null;
             const label = SKILL_LABELS[key] ?? key;
-            const mod = skill.totalModifier ?? skill.mod ?? skill.value ?? 0;
-            const rank = skill.rank ?? 0;
             return (
               <SkillRow
                 key={key}
@@ -75,7 +82,7 @@ export default function SkillsTab({ character }: Props) {
               />
             );
           })}
-          {skillKeys.filter((k) => skills[k]).length === 0 && (
+          {skillKeys.filter((k) => skills[k] || computed?.skills[k]).length === 0 && (
             <Text style={styles.empty}>No skill data available.</Text>
           )}
         </View>

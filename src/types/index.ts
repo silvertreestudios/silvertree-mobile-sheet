@@ -148,6 +148,7 @@ export interface PF2eCharacter {
     };
     resources?: {
       focus?: { value?: number; max?: number };
+      heroPoints?: { value?: number; max?: number };
     };
     traits?: {
       value?: string[];

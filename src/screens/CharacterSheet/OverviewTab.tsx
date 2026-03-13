@@ -12,6 +12,12 @@ import { PF2eCharacter } from '../../types';
 import StatBox from '../../components/StatBox';
 import foundryApi from '../../api/foundryApi';
 import { useApp } from '../../contexts/AppContext';
+import {
+  extractCharacterDetails,
+  extractCurrency,
+  getHeroPoints,
+  computeCharacterStats,
+} from '../../utils/characterUtils';
 
 interface Props {
   character: PF2eCharacter;
@@ -33,6 +39,10 @@ export default function OverviewTab({ character, onRefresh }: Props) {
   const dying = attrs?.dying;
   const wounded = attrs?.wounded;
   const classDC = attrs?.classDC;
+  const charDetails = extractCharacterDetails(character);
+  const currency = extractCurrency(character);
+  const heroPoints = getHeroPoints(character);
+  const computed = computeCharacterStats(character);
 
   async function adjustHp(delta: number) {
     if (!config.actorUuid || !config.clientId) return;
@@ -70,7 +80,7 @@ export default function OverviewTab({ character, onRefresh }: Props) {
           </TouchableOpacity>
           <View style={styles.hpDisplay}>
             <Text style={styles.hpCurrent}>{hp?.value ?? '—'}</Text>
-            <Text style={styles.hpMax}>/ {hp?.max ?? '—'}</Text>
+            <Text style={styles.hpMax}>/ {hp?.max ?? computed?.hpMax ?? '?'}</Text>
             {hp?.temp !== undefined && hp.temp > 0 && (
               <Text style={styles.hpTemp}>+{hp.temp} temp</Text>
             )}
@@ -83,23 +93,25 @@ export default function OverviewTab({ character, onRefresh }: Props) {
           </TouchableOpacity>
         </View>
 
-        {/* HP bar */}
-        <View style={styles.hpBarBackground}>
-          <View
-            style={[
-              styles.hpBarFill,
-              {
-                width: `${Math.min(100, Math.max(0, ((hp?.value ?? 0) / (hp?.max ?? 1)) * 100))}%`,
-                backgroundColor:
-                  (hp?.value ?? 0) / (hp?.max ?? 1) > 0.5
-                    ? Colors.hpHigh
-                    : (hp?.value ?? 0) / (hp?.max ?? 1) > 0.25
-                    ? Colors.hpMed
-                    : Colors.hpLow,
-              },
-            ]}
-          />
-        </View>
+        {/* HP bar — only show when max HP is known */}
+        {(hp?.max ?? computed?.hpMax) !== undefined && (hp?.max ?? computed?.hpMax ?? 0) > 0 && (
+          <View style={styles.hpBarBackground}>
+            <View
+              style={[
+                styles.hpBarFill,
+                {
+                  width: `${Math.min(100, Math.max(0, ((hp?.value ?? 0) / (hp?.max ?? computed?.hpMax ?? 1)) * 100))}%`,
+                  backgroundColor:
+                    (hp?.value ?? 0) / (hp?.max ?? computed?.hpMax ?? 1) > 0.5
+                      ? Colors.hpHigh
+                      : (hp?.value ?? 0) / (hp?.max ?? computed?.hpMax ?? 1) > 0.25
+                      ? Colors.hpMed
+                      : Colors.hpLow,
+                },
+              ]}
+            />
+          </View>
+        )}
 
         {/* Dying / Wounded conditions */}
         {((dying?.value ?? 0) > 0 || (wounded?.value ?? 0) > 0) && (
@@ -146,45 +158,43 @@ export default function OverviewTab({ character, onRefresh }: Props) {
         <View style={styles.row}>
           <StatBox
             label="Fortitude"
-            value={saves?.fortitude?.totalModifier ?? 0}
+            value={formatMod(saves?.fortitude?.totalModifier ?? computed?.saves.fortitude)}
             color={Colors.info}
           />
           <StatBox
             label="Reflex"
-            value={saves?.reflex?.totalModifier ?? 0}
+            value={formatMod(saves?.reflex?.totalModifier ?? computed?.saves.reflex)}
             color={Colors.info}
           />
           <StatBox
             label="Will"
-            value={saves?.will?.totalModifier ?? 0}
+            value={formatMod(saves?.will?.totalModifier ?? computed?.saves.will)}
             color={Colors.info}
           />
         </View>
       </View>
 
       {/* Class DC */}
-      {classDC !== undefined && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Class DC</Text>
-          <View style={styles.row}>
-            <StatBox label="Class DC" value={classDC?.value ?? '—'} />
-          </View>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Class DC</Text>
+        <View style={styles.row}>
+          <StatBox label="Class DC" value={classDC?.value ?? computed?.classDC ?? '—'} />
         </View>
-      )}
+      </View>
 
       {/* Character details */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Details</Text>
         <View style={styles.detailsGrid}>
           {[
-            { label: 'Ancestry', value: sys?.details?.ancestry?.value },
-            { label: 'Heritage', value: sys?.details?.heritage?.value },
-            { label: 'Class', value: sys?.details?.class?.value },
-            { label: 'Background', value: sys?.details?.background?.value },
-            { label: 'Alignment', value: sys?.details?.alignment?.value },
-            { label: 'Deity', value: sys?.details?.deity?.value },
-            { label: 'Gender', value: sys?.details?.gender?.value },
-            { label: 'Age', value: sys?.details?.age?.value },
+            { label: 'Ancestry', value: charDetails.ancestry },
+            { label: 'Heritage', value: charDetails.heritage },
+            { label: 'Class', value: charDetails.class },
+            { label: 'Background', value: charDetails.background },
+            { label: 'Alignment', value: charDetails.alignment },
+            { label: 'Deity', value: charDetails.deity },
+            { label: 'Gender', value: charDetails.gender },
+            { label: 'Age', value: charDetails.age },
             { label: 'Size', value: sys?.traits?.size?.value },
           ]
             .filter((d) => d.value)
@@ -198,16 +208,30 @@ export default function OverviewTab({ character, onRefresh }: Props) {
       </View>
 
       {/* Currency */}
-      {sys?.currency && (
+      {currency && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Currency</Text>
           <View style={styles.row}>
-            {sys.currency.pp !== undefined && (
-              <StatBox label="PP" value={sys.currency.pp} color={Colors.info} />
+            {currency.pp > 0 && (
+              <StatBox label="PP" value={currency.pp} color={Colors.info} />
             )}
-            <StatBox label="GP" value={sys.currency.gp ?? 0} color={Colors.gold} />
-            <StatBox label="SP" value={sys.currency.sp ?? 0} color={Colors.textSecondary} />
-            <StatBox label="CP" value={sys.currency.cp ?? 0} color="#a0522d" />
+            <StatBox label="GP" value={currency.gp} color={Colors.gold} />
+            <StatBox label="SP" value={currency.sp} color={Colors.textSecondary} />
+            <StatBox label="CP" value={currency.cp} color="#a0522d" />
+          </View>
+        </View>
+      )}
+
+      {/* Hero Points */}
+      {heroPoints && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Hero Points</Text>
+          <View style={styles.row}>
+            <StatBox
+              label="Hero"
+              value={`${heroPoints.value}/${heroPoints.max}`}
+              color={Colors.gold}
+            />
           </View>
         </View>
       )}

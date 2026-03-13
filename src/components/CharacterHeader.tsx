@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Colors, FontSize, Spacing } from '../utils/theme';
 import { PF2eCharacter } from '../types';
+import { extractCharacterDetails, getHeroPoints, computeCharacterStats } from '../utils/characterUtils';
 
 interface CharacterHeaderProps {
   character: PF2eCharacter;
@@ -15,21 +16,25 @@ function getHpColor(current: number, max: number): string {
   return Colors.hpLow;
 }
 
+function fmtMod(n: number | undefined): string {
+  if (n === undefined) return '—';
+  return n >= 0 ? `+${n}` : `${n}`;
+}
+
 export default function CharacterHeader({ character }: CharacterHeaderProps) {
-  const details = character.system?.details;
+  const charDetails = extractCharacterDetails(character);
   const attrs = character.system?.attributes;
   const hp = attrs?.hp;
-  const ac = attrs?.ac;
-  const heroPoints = attrs?.heroPoints;
+  const heroPoints = getHeroPoints(character);
+  const computed = computeCharacterStats(character);
 
-  const ancestry = details?.ancestry?.value ?? '';
-  const heritage = details?.heritage?.value ?? '';
-  const cls = details?.class?.value ?? '';
-  const level = details?.level?.value ?? 1;
-  const subTitle = [ancestry, heritage, cls].filter(Boolean).join(' ');
+  const level = charDetails.level;
+  const subTitle = [charDetails.ancestry, charDetails.heritage, charDetails.class]
+    .filter(Boolean)
+    .join(' ');
 
   const hpCurrent = hp?.value ?? 0;
-  const hpMax = hp?.max ?? 0;
+  const hpMax = hp?.max ?? computed?.hpMax ?? 0;
   const hpColor = getHpColor(hpCurrent, hpMax);
 
   return (
@@ -66,7 +71,7 @@ export default function CharacterHeader({ character }: CharacterHeaderProps) {
         {/* AC */}
         <View style={styles.statBlock}>
           <Text style={styles.statLabel}>AC</Text>
-          <Text style={styles.statValue}>{ac?.value ?? '—'}</Text>
+          <Text style={styles.statValue}>{attrs?.ac?.value ?? computed?.ac ?? '—'}</Text>
         </View>
 
         <View style={styles.divider} />
@@ -76,10 +81,8 @@ export default function CharacterHeader({ character }: CharacterHeaderProps) {
           <Text style={styles.statLabel}>PERC</Text>
           <Text style={styles.statValue}>
             {attrs?.perception?.totalModifier !== undefined
-              ? (attrs.perception.totalModifier >= 0
-                  ? `+${attrs.perception.totalModifier}`
-                  : `${attrs.perception.totalModifier}`)
-              : '—'}
+              ? fmtMod(attrs.perception.totalModifier)
+              : fmtMod(computed?.perception)}
           </Text>
         </View>
 
@@ -88,7 +91,7 @@ export default function CharacterHeader({ character }: CharacterHeaderProps) {
         {/* Speed */}
         <View style={styles.statBlock}>
           <Text style={styles.statLabel}>SPD</Text>
-          <Text style={styles.statValue}>{attrs?.speed?.value ?? '—'}</Text>
+          <Text style={styles.statValue}>{attrs?.speed?.value ?? computed?.speed ?? '—'}</Text>
         </View>
 
         {heroPoints !== undefined && (

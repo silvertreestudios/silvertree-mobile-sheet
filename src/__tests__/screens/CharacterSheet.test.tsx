@@ -42,6 +42,26 @@ jest.mock('../../api/foundryApi', () => ({
   },
 }));
 
+const mockNavigation = {
+  navigate: jest.fn(),
+  goBack: jest.fn(),
+  setParams: jest.fn(),
+  dispatch: jest.fn(),
+  reset: jest.fn(),
+  isFocused: jest.fn().mockReturnValue(true),
+  canGoBack: jest.fn().mockReturnValue(true),
+  getId: jest.fn(),
+  getParent: jest.fn(),
+  getState: jest.fn(),
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
+  setOptions: jest.fn(),
+  push: jest.fn(),
+  pop: jest.fn(),
+  popToTop: jest.fn(),
+  replace: jest.fn(),
+} as any;
+
 const mockRoute = {
   key: 'CharacterSheet-test',
   name: 'CharacterSheet' as const,
@@ -51,7 +71,7 @@ const mockRoute = {
 describe('CharacterSheetScreen', () => {
   it('renders correctly (default Overview tab)', () => {
     const { toJSON } = render(
-      <CharacterSheetScreen route={mockRoute as any} />
+      <CharacterSheetScreen navigation={mockNavigation} route={mockRoute as any} />
     );
     expect(toJSON()).toMatchSnapshot();
   });

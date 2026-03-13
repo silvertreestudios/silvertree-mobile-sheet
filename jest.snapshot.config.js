@@ -8,6 +8,7 @@ const baseConfig = require('./package.json').jest;
 module.exports = {
   ...baseConfig,
   testMatch: ['**/src/__tests__/screens/**/*.test.[jt]s?(x)'],
+  testPathIgnorePatterns: ['/node_modules/'],
   setupFilesAfterEnv: [
     ...baseConfig.setupFilesAfterEnv,
     '<rootDir>/src/__tests__/screens/setup.js',

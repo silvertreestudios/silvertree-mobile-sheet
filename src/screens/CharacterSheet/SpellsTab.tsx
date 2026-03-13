@@ -61,27 +61,27 @@ export default function SpellsTab({ character }: Props) {
       {(focusSpells.length > 0 || (focus && focus.max && focus.max > 0)) && (
         <>
           <SectionBanner title="Focus Spells" />
-          {focus && (
-            <View style={styles.focusInfo}>
-              <Text style={styles.focusIcon}>🔥</Text>
-              {focusSpells.map((spell) => (
-                <TouchableOpacity
-                  key={spell._id}
-                  style={styles.focusSpellRow}
-                  onPress={() => setSelected(spell)}
-                >
-                  <View style={styles.spellIconContainer}>
-                    <Text style={styles.spellIcon}>❯❯❯</Text>
-                  </View>
-                  <Text style={styles.focusSpellName}>{spell.name}</Text>
-                  <Text style={styles.focusLabel}>Focus 1</Text>
+          <View style={styles.focusInfo}>
+            {focus && <Text style={styles.focusIcon}>🔥</Text>}
+            {focusSpells.map((spell) => (
+              <TouchableOpacity
+                key={spell._id}
+                style={styles.focusSpellRow}
+                onPress={() => setSelected(spell)}
+              >
+                <View style={styles.spellIconContainer}>
+                  <Text style={styles.spellIcon}>❯❯❯</Text>
+                </View>
+                <Text style={styles.focusSpellName}>{spell.name}</Text>
+                <Text style={styles.focusLabel}>Focus 1</Text>
+                {focus && (
                   <View style={styles.focusCountBadge}>
                     <Text style={styles.focusCountText}>{focus.max ?? 0}</Text>
                   </View>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
         </>
       )}
 

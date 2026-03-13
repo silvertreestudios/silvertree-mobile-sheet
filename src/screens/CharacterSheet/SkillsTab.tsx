@@ -69,7 +69,7 @@ export default function SkillsTab({ character }: Props) {
           const abilityData = abilities[abilityKey as keyof typeof abilities];
           const abilityMod = abilityData?.mod ?? 0;
           const abilityLabel = ABILITY_LABELS[abilityKey] ?? abilityKey.toUpperCase();
-          const profBonus = rank > 0 ? rank * 2 + (character.system?.details?.level?.value ?? 0) : 0;
+          const profBonus = rank > 0 ? rank * 2 + (character.system?.details?.level?.value ?? 1) : 0;
           const hasArmorPenalty = ARMOR_PENALTY_SKILLS.includes(key);
 
           return (

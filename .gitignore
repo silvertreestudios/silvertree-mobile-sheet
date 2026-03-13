@@ -34,8 +34,8 @@ yarn-error.*
 .env
 .env*.local
 
-# Local Podman E2E environment
-docker/worlds/
+# Local Podman E2E environment (keep world snapshots, ignore runtime data)
+docker/worlds/**/output/
 
 # test coverage
 coverage/

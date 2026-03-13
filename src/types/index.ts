@@ -86,6 +86,7 @@ export interface PF2eItem {
     bulk?: { value?: number };
     weight?: { value?: number };
     slug?: string;
+    checkPenalty?: number;
     duration?: { value?: string };
     range?: { value?: string };
     target?: { value?: string };

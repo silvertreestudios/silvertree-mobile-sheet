@@ -19,7 +19,7 @@ export default function CharacterHeader({ character }: CharacterHeaderProps) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.menuIcon}>☰</Text>
+      <Text style={styles.menuIcon} accessible={false}>☰</Text>
       <Text style={styles.title} numberOfLines={1}>
         {title}
       </Text>

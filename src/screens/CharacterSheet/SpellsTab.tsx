@@ -52,11 +52,6 @@ export default function SpellsTab({ character }: Props) {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Restore All button */}
-      <TouchableOpacity style={styles.restoreBtn}>
-        <Text style={styles.restoreBtnText}>Restore All Spell Slots</Text>
-      </TouchableOpacity>
-
       {/* Focus Spells */}
       {(focusSpells.length > 0 || (focus && focus.max && focus.max > 0)) && (
         <>
@@ -168,21 +163,6 @@ export default function SpellsTab({ character }: Props) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
   content: { paddingBottom: Spacing.xxl },
-  restoreBtn: {
-    marginHorizontal: Spacing.lg,
-    marginTop: Spacing.lg,
-    marginBottom: Spacing.md,
-    backgroundColor: Colors.card,
-    borderRadius: 8,
-    paddingVertical: Spacing.md,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  restoreBtnText: {
-    color: Colors.textPrimary,
-    fontSize: FontSize.md,
-  },
   focusInfo: {
     padding: Spacing.md,
   },

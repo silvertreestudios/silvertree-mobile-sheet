@@ -56,6 +56,12 @@ export default function SkillsTab({ character }: Props) {
     }
   }
 
+  // Compute armor check penalty from equipped armor
+  const equippedArmor = (character.items ?? []).find(
+    (i) => i.type === 'armor' && i.system?.equipped?.carryType === 'worn'
+  );
+  const armorCheckPenalty = equippedArmor?.system?.checkPenalty ?? 0;
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.skillsList}>
@@ -82,7 +88,7 @@ export default function SkillsTab({ character }: Props) {
               abilityLabel={abilityLabel.substring(0, 3)}
               profBonus={profBonus}
               itemBonus={0}
-              armorPenalty={hasArmorPenalty ? 0 : undefined}
+              armorPenalty={hasArmorPenalty ? armorCheckPenalty : undefined}
               onPress={() => handleRollSkill(key, label, mod)}
             />
           );

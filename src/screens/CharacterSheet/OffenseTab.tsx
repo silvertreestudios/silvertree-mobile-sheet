@@ -105,7 +105,8 @@ function WeaponCard({ weapon, character, onRoll }: { weapon: PF2eItem; character
 
   // Determine attack ability (finesse/ranged = dex, otherwise str)
   const isFinesse = traits.includes('finesse');
-  const isRanged = traits.includes('ranged') || weapon.system?.slug?.includes('bow') || weapon.system?.slug?.includes('crossbow');
+  const slug = weapon.system?.slug ?? '';
+  const isRanged = traits.includes('ranged') || slug.includes('bow') || slug.includes('crossbow');
   const attackAbility = isFinesse || isRanged ? 'Dex' : 'Str';
   const abilityKey = attackAbility.toLowerCase() as 'str' | 'dex';
   const attackAbilityMod = sys?.abilities?.[abilityKey]?.mod ?? 0;

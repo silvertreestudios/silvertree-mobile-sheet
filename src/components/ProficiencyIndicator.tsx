@@ -75,8 +75,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.textPrimary,
   },
   circleEmpty: {
-    backgroundColor: Colors.textPrimary,
-    opacity: 0.9,
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
+    borderColor: Colors.textMuted,
   },
   xMark: {
     color: Colors.background,

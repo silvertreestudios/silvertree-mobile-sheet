@@ -64,10 +64,10 @@ export default function AboutTab({ character }: Props) {
       {classDC !== undefined && (
         <View style={styles.dcSection}>
           <View style={styles.dcRow}>
-            <Text style={styles.dcLabel}>Cleric DC {classDC.value ?? '—'}</Text>
+            <Text style={styles.dcLabel}>{details?.class?.value ?? 'Class'} DC {classDC.value ?? '—'}</Text>
             <ProficiencyIndicator rank={classDC.rank ?? 0} />
             <Text style={styles.breakdownText}>Wis{'\n'}+{abilities.wis?.mod ?? 0}</Text>
-            <Text style={styles.breakdownText}>Prof{'\n'}{formatMod(classDC.value ? classDC.value - 10 - (abilities.wis?.mod ?? 0) : undefined)}</Text>
+            <Text style={styles.breakdownText}>Prof{'\n'}{formatMod(classDC.rank ? classDC.rank * 2 + level : 0)}</Text>
             <Text style={styles.breakdownText}>Item{'\n'}0</Text>
           </View>
         </View>

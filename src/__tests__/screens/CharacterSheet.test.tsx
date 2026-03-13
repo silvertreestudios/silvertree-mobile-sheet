@@ -2,11 +2,13 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { mockCharacter } from './__fixtures__/character';
 import CharacterSheetScreen from '../../screens/CharacterSheet';
-import OverviewTab from '../../screens/CharacterSheet/OverviewTab';
-import AbilitiesTab from '../../screens/CharacterSheet/AbilitiesTab';
+import AboutTab from '../../screens/CharacterSheet/AboutTab';
+import DefenseTab from '../../screens/CharacterSheet/DefenseTab';
+import OffenseTab from '../../screens/CharacterSheet/OffenseTab';
 import SkillsTab from '../../screens/CharacterSheet/SkillsTab';
 import FeatsTab from '../../screens/CharacterSheet/FeatsTab';
-import InventoryTab from '../../screens/CharacterSheet/InventoryTab';
+import SpellsTab from '../../screens/CharacterSheet/SpellsTab';
+import GearTab from '../../screens/CharacterSheet/GearTab';
 
 jest.mock('@react-navigation/native', () => ({
   useNavigation: () => ({ navigate: jest.fn(), goBack: jest.fn() }),
@@ -77,18 +79,25 @@ describe('CharacterSheetScreen', () => {
   });
 });
 
-describe('OverviewTab', () => {
+describe('AboutTab', () => {
+  it('renders correctly', () => {
+    const { toJSON } = render(<AboutTab character={mockCharacter} />);
+    expect(toJSON()).toMatchSnapshot();
+  });
+});
+
+describe('DefenseTab', () => {
   it('renders correctly', () => {
     const { toJSON } = render(
-      <OverviewTab character={mockCharacter} onRefresh={jest.fn()} />
+      <DefenseTab character={mockCharacter} onRefresh={jest.fn()} />
     );
     expect(toJSON()).toMatchSnapshot();
   });
 });
 
-describe('AbilitiesTab', () => {
+describe('OffenseTab', () => {
   it('renders correctly', () => {
-    const { toJSON } = render(<AbilitiesTab character={mockCharacter} />);
+    const { toJSON } = render(<OffenseTab character={mockCharacter} />);
     expect(toJSON()).toMatchSnapshot();
   });
 });
@@ -107,9 +116,16 @@ describe('FeatsTab', () => {
   });
 });
 
-describe('InventoryTab', () => {
+describe('SpellsTab', () => {
   it('renders correctly', () => {
-    const { toJSON } = render(<InventoryTab character={mockCharacter} />);
+    const { toJSON } = render(<SpellsTab character={mockCharacter} />);
+    expect(toJSON()).toMatchSnapshot();
+  });
+});
+
+describe('GearTab', () => {
+  it('renders correctly', () => {
+    const { toJSON } = render(<GearTab character={mockCharacter} />);
     expect(toJSON()).toMatchSnapshot();
   });
 });

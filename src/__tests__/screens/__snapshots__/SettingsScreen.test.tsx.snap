@@ -5,7 +5,7 @@ exports[`SettingsScreen renders correctly 1`] = `
   keyboardShouldPersistTaps="handled"
   style={
     {
-      "backgroundColor": "#1a1a2e",
+      "backgroundColor": "#121212",
       "flex": 1,
     }
   }
@@ -74,8 +74,8 @@ exports[`SettingsScreen renders correctly 1`] = `
         placeholderTextColor="#718096"
         style={
           {
-            "backgroundColor": "#0f3460",
-            "borderColor": "#2d3748",
+            "backgroundColor": "#252525",
+            "borderColor": "#333333",
             "borderRadius": 8,
             "borderWidth": 1,
             "color": "#ffffff",
@@ -138,8 +138,8 @@ exports[`SettingsScreen renders correctly 1`] = `
         secureTextEntry={false}
         style={
           {
-            "backgroundColor": "#0f3460",
-            "borderColor": "#2d3748",
+            "backgroundColor": "#252525",
+            "borderColor": "#333333",
             "borderRadius": 8,
             "borderWidth": 1,
             "color": "#ffffff",
@@ -223,8 +223,8 @@ exports[`SettingsScreen renders correctly 1`] = `
           onStartShouldSetResponder={[Function]}
           style={
             {
-              "backgroundColor": "#1a3a5c",
-              "borderColor": "#e94560",
+              "backgroundColor": "#2a2d35",
+              "borderColor": "#5c8db5",
               "borderRadius": 6,
               "borderWidth": 1,
               "opacity": 1,
@@ -236,7 +236,7 @@ exports[`SettingsScreen renders correctly 1`] = `
           <Text
             style={
               {
-                "color": "#e94560",
+                "color": "#5c8db5",
                 "fontSize": 12,
                 "fontWeight": "600",
               }
@@ -288,8 +288,8 @@ exports[`SettingsScreen renders correctly 1`] = `
           placeholderTextColor="#718096"
           style={
             {
-              "backgroundColor": "#0f3460",
-              "borderColor": "#2d3748",
+              "backgroundColor": "#252525",
+              "borderColor": "#333333",
               "borderRadius": 8,
               "borderWidth": 1,
               "color": "#ffffff",
@@ -332,7 +332,7 @@ exports[`SettingsScreen renders correctly 1`] = `
       style={
         {
           "alignItems": "center",
-          "backgroundColor": "#e94560",
+          "backgroundColor": "#5c8db5",
           "borderRadius": 10,
           "marginBottom": 24,
           "marginHorizontal": 16,

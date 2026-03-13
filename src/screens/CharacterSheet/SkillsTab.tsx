@@ -1,21 +1,42 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
-import { Colors, FontSize, Spacing, SKILL_LABELS } from '../../utils/theme';
+import { Colors, FontSize, Spacing, SKILL_LABELS, ABILITY_LABELS } from '../../utils/theme';
 import { PF2eCharacter } from '../../types';
 import SkillRow from '../../components/SkillRow';
 import foundryApi from '../../api/foundryApi';
 import { useApp } from '../../contexts/AppContext';
-import { computeCharacterStats } from '../../utils/characterUtils';
 
 interface Props {
   character: PF2eCharacter;
 }
 
+// Map skills to their key ability
+const SKILL_ABILITIES: Record<string, string> = {
+  acrobatics: 'dex',
+  arcana: 'int',
+  athletics: 'str',
+  crafting: 'int',
+  deception: 'cha',
+  diplomacy: 'cha',
+  intimidation: 'cha',
+  medicine: 'wis',
+  nature: 'wis',
+  occultism: 'int',
+  performance: 'cha',
+  religion: 'wis',
+  society: 'int',
+  stealth: 'dex',
+  survival: 'wis',
+  thievery: 'dex',
+};
+
+// Skills that get armor penalty
+const ARMOR_PENALTY_SKILLS = ['acrobatics', 'athletics', 'stealth', 'thievery'];
+
 export default function SkillsTab({ character }: Props) {
   const { config } = useApp();
   const skills = character.system?.skills ?? {};
-  const perception = character.system?.attributes?.perception;
-  const computed = computeCharacterStats(character);
+  const abilities = character.system?.abilities ?? {};
 
   const skillKeys = Object.keys(SKILL_LABELS).sort();
 
@@ -35,57 +56,46 @@ export default function SkillsTab({ character }: Props) {
     }
   }
 
-  // Resolve perception: prefer API data, fall back to computed
-  const percMod = perception?.totalModifier ?? computed?.perception;
-  const percRank = computed?.perceptionRank ?? 0;
+  // Compute armor check penalty from equipped armor
+  const equippedArmor = (character.items ?? []).find(
+    (i) => i.type === 'armor' && i.system?.equipped?.carryType === 'worn'
+  );
+  const armorCheckPenalty = equippedArmor?.system?.checkPenalty ?? 0;
 
   return (
     <ScrollView style={styles.container}>
-      {/* Perception at the top */}
-      {percMod !== undefined && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Perception</Text>
-          <View style={styles.card}>
-            <SkillRow
-              label="Perception"
-              modifier={percMod}
-              rank={percRank}
-              onPress={() =>
-                handleRollSkill(
-                  'perception',
-                  'Perception',
-                  percMod,
-                )
-              }
-            />
-          </View>
-        </View>
-      )}
+      <View style={styles.skillsList}>
+        {skillKeys.map((key) => {
+          const skill = skills[key];
+          if (!skill) return null;
+          const label = SKILL_LABELS[key] ?? key;
+          const mod = skill.totalModifier ?? skill.mod ?? skill.value ?? 0;
+          const rank = skill.rank ?? 0;
+          const abilityKey = SKILL_ABILITIES[key] ?? 'str';
+          const abilityData = abilities[abilityKey as keyof typeof abilities];
+          const abilityMod = abilityData?.mod ?? 0;
+          const abilityLabel = ABILITY_LABELS[abilityKey] ?? abilityKey.toUpperCase();
+          const profBonus = rank > 0 ? rank * 2 + (character.system?.details?.level?.value ?? 1) : 0;
+          const hasArmorPenalty = ARMOR_PENALTY_SKILLS.includes(key);
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Skills</Text>
-        <View style={styles.card}>
-          {skillKeys.map((key) => {
-            const apiSkill = skills[key];
-            const computedSkill = computed?.skills[key];
-            const mod = apiSkill?.totalModifier ?? apiSkill?.mod ?? apiSkill?.value ?? computedSkill?.mod;
-            const rank = apiSkill?.rank ?? computedSkill?.rank ?? 0;
-            if (mod === undefined) return null;
-            const label = SKILL_LABELS[key] ?? key;
-            return (
-              <SkillRow
-                key={key}
-                label={label}
-                modifier={mod}
-                rank={rank}
-                onPress={() => handleRollSkill(key, label, mod)}
-              />
-            );
-          })}
-          {skillKeys.filter((k) => skills[k] || computed?.skills[k]).length === 0 && (
-            <Text style={styles.empty}>No skill data available.</Text>
-          )}
-        </View>
+          return (
+            <SkillRow
+              key={key}
+              label={label}
+              modifier={mod}
+              rank={rank}
+              abilityMod={abilityMod}
+              abilityLabel={abilityLabel.substring(0, 3)}
+              profBonus={profBonus}
+              itemBonus={0}
+              armorPenalty={hasArmorPenalty ? armorCheckPenalty : undefined}
+              onPress={() => handleRollSkill(key, label, mod)}
+            />
+          );
+        })}
+        {skillKeys.filter((k) => skills[k]).length === 0 && (
+          <Text style={styles.empty}>No skill data available.</Text>
+        )}
       </View>
     </ScrollView>
   );
@@ -93,25 +103,8 @@ export default function SkillsTab({ character }: Props) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  section: {
-    padding: Spacing.md,
-    paddingBottom: 0,
-  },
-  sectionTitle: {
-    color: Colors.textMuted,
-    fontSize: FontSize.xs,
-    fontWeight: '700',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    marginBottom: Spacing.sm,
-  },
-  card: {
-    backgroundColor: Colors.card,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    overflow: 'hidden',
-    marginBottom: Spacing.md,
+  skillsList: {
+    backgroundColor: Colors.background,
   },
   empty: {
     color: Colors.textMuted,

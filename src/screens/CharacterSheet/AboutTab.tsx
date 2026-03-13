@@ -27,6 +27,9 @@ export default function AboutTab({ character }: Props) {
   const xp = details?.xp;
   const size = sys?.traits?.size?.value ?? 'Medium';
   const speed = attrs?.speed?.value ?? '—';
+  const keyAbility = details?.keyability?.value ?? 'wis';
+  const keyAbilityLabel = keyAbility.charAt(0).toUpperCase() + keyAbility.slice(1);
+  const keyAbilityMod = abilities[keyAbility as keyof typeof abilities]?.mod ?? 0;
 
   const abilityKeys = ['str', 'dex', 'con', 'int', 'wis', 'cha'] as const;
 
@@ -66,7 +69,7 @@ export default function AboutTab({ character }: Props) {
           <View style={styles.dcRow}>
             <Text style={styles.dcLabel}>{details?.class?.value ?? 'Class'} DC {classDC.value ?? '—'}</Text>
             <ProficiencyIndicator rank={classDC.rank ?? 0} />
-            <Text style={styles.breakdownText}>Wis{'\n'}+{abilities.wis?.mod ?? 0}</Text>
+            <Text style={styles.breakdownText}>{keyAbilityLabel}{'\n'}{formatMod(keyAbilityMod)}</Text>
             <Text style={styles.breakdownText}>Prof{'\n'}{formatMod(classDC.rank ? classDC.rank * 2 + level : 0)}</Text>
             <Text style={styles.breakdownText}>Item{'\n'}0</Text>
           </View>
@@ -134,11 +137,11 @@ export default function AboutTab({ character }: Props) {
         })}
 
         {/* Languages */}
-        {sys?.traits?.value && sys.traits.value.length > 0 && (
+        {details?.languages?.value && details.languages.value.length > 0 && (
           <View style={styles.detailField}>
             <Text style={styles.detailFieldLabel}>Languages</Text>
             <Text style={styles.detailFieldValue}>
-              {sys.traits.value.join(', ')}
+              {details.languages.value.join(', ')}
             </Text>
           </View>
         )}

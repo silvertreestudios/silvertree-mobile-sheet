@@ -15,13 +15,6 @@ interface Props {
   character: PF2eCharacter;
 }
 
-const FEAT_TYPE_LABELS: Record<string, string> = {
-  classFeature: 'CLASS FEAT',
-  feat: 'FEAT',
-  ancestryFeature: 'ANCESTRY FEAT',
-  heritage: 'HERITAGE',
-};
-
 interface FeatGroup {
   label: string;
   items: PF2eItem[];

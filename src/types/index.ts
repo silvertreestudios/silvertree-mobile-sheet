@@ -112,6 +112,8 @@ export interface PF2eCharacter {
       age?: { value?: string };
       gender?: { value?: string };
       deity?: { value?: string };
+      keyability?: { value?: string };
+      languages?: { value?: string[] };
     };
     abilities?: {
       str?: AbilityScore;

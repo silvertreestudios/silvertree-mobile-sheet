@@ -141,7 +141,7 @@ function WeaponCard({ weapon, character, onRoll }: { weapon: PF2eItem; character
       <View style={styles.weaponActions}>
         <TouchableOpacity
           style={styles.weaponActionBtn}
-          onPress={() => onRoll(`1d20+${attackAbilityMod}`, `${weapon.name} Attack`)}
+          onPress={() => onRoll(`1d20${attackAbilityMod >= 0 ? '+' : ''}${attackAbilityMod}`, `${weapon.name} Attack`)}
         >
           <Text style={styles.weaponActionText}>⬡ Roll</Text>
         </TouchableOpacity>

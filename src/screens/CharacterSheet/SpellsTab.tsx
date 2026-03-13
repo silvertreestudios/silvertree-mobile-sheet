@@ -39,6 +39,9 @@ export default function SpellsTab({ character }: Props) {
   const sys = character.system;
   const focus = sys?.resources?.focus;
   const classDC = sys?.attributes?.classDC;
+  const keyAbility = sys?.details?.keyability?.value ?? 'wis';
+  const keyAbilityLabel = keyAbility.charAt(0).toUpperCase() + keyAbility.slice(1);
+  const keyAbilityMod = sys?.abilities?.[keyAbility as keyof NonNullable<typeof sys.abilities>]?.mod;
 
   const allSpells = (character.items ?? []).filter((i) => i.type === 'spell');
   const cantrips = allSpells.filter((s) => (s.system?.level?.value ?? 0) === 0 || s.system?.traits?.value?.includes('cantrip'));
@@ -90,7 +93,7 @@ export default function SpellsTab({ character }: Props) {
             <View style={styles.dcRow}>
               <Text style={styles.dcText}>DC {classDC.value ?? '—'}</Text>
               <ProficiencyIndicator rank={classDC.rank ?? 0} />
-              <Text style={styles.breakdownText}>Wis{'\n'}{formatMod(sys?.abilities?.wis?.mod)}</Text>
+              <Text style={styles.breakdownText}>{keyAbilityLabel}{'\n'}{formatMod(keyAbilityMod)}</Text>
               <Text style={styles.breakdownText}>Prof{'\n'}+0</Text>
               <Text style={styles.breakdownText}>Item{'\n'}+0</Text>
             </View>
@@ -133,9 +136,9 @@ export default function SpellsTab({ character }: Props) {
                 style={styles.spellRow}
                 onPress={() => setSelected(spell)}
               >
-                <TouchableOpacity style={styles.castBtn}>
+                <View style={styles.castBtn}>
                   <Text style={styles.castBtnText}>Cast</Text>
-                </TouchableOpacity>
+                </View>
                 <View style={styles.spellIconContainer}>
                   <Text style={styles.spellIcon}>❯❯❯</Text>
                 </View>

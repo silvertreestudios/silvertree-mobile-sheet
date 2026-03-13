@@ -8,7 +8,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest",
-    "test:ci": "jest --ci --coverage"
+    "test:ci": "jest --ci --coverage",
+    "test:snapshot": "jest --config jest.snapshot.config.js",
+    "validate": "tsc --noEmit && jest --ci --coverage && jest --config jest.snapshot.config.js"
   },
   "jest": {
     "preset": "jest-expo",
@@ -17,6 +19,10 @@
     ],
     "testMatch": [
       "**/src/__tests__/**/*.test.[jt]s?(x)"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/src/__tests__/screens/"
     ],
     "transformIgnorePatterns": [
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"

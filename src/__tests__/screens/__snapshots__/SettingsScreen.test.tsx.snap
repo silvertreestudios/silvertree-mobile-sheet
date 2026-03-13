@@ -1,0 +1,377 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SettingsScreen renders correctly 1`] = `
+<RCTScrollView
+  keyboardShouldPersistTaps="handled"
+  style={
+    {
+      "backgroundColor": "#1a1a2e",
+      "flex": 1,
+    }
+  }
+>
+  <View>
+    <View
+      style={
+        {
+          "padding": 24,
+          "paddingBottom": 16,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#ffffff",
+            "fontSize": 24,
+            "fontWeight": "bold",
+            "marginBottom": 4,
+          }
+        }
+      >
+        ⚙️  Connection Setup
+      </Text>
+      <Text
+        style={
+          {
+            "color": "#a0aec0",
+            "fontSize": 12,
+            "lineHeight": 20,
+          }
+        }
+      >
+        Connect to your FoundryVTT instance via the REST API Relay
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "marginBottom": 24,
+          "marginHorizontal": 16,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#ffffff",
+            "fontSize": 14,
+            "fontWeight": "600",
+            "letterSpacing": 0.5,
+            "marginBottom": 8,
+            "textTransform": "uppercase",
+          }
+        }
+      >
+        Relay Server URL
+      </Text>
+      <TextInput
+        autoCapitalize="none"
+        autoCorrect={false}
+        keyboardType="url"
+        onChangeText={[Function]}
+        placeholder="https://foundryvtt-rest-api-relay.fly.dev"
+        placeholderTextColor="#718096"
+        style={
+          {
+            "backgroundColor": "#0f3460",
+            "borderColor": "#2d3748",
+            "borderRadius": 8,
+            "borderWidth": 1,
+            "color": "#ffffff",
+            "fontSize": 14,
+            "padding": 12,
+          }
+        }
+        value="https://foundryvtt-rest-api-relay.fly.dev"
+      />
+      <Text
+        style={
+          {
+            "color": "#718096",
+            "fontSize": 10,
+            "marginTop": 4,
+          }
+        }
+      >
+        The public relay is available at
+         
+        <Text
+          style={
+            {
+              "color": "#63b3ed",
+            }
+          }
+        >
+          foundryvtt-rest-api-relay.fly.dev
+        </Text>
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "marginBottom": 24,
+          "marginHorizontal": 16,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#ffffff",
+            "fontSize": 14,
+            "fontWeight": "600",
+            "letterSpacing": 0.5,
+            "marginBottom": 8,
+            "textTransform": "uppercase",
+          }
+        }
+      >
+        API Key
+      </Text>
+      <TextInput
+        autoCapitalize="none"
+        autoCorrect={false}
+        onChangeText={[Function]}
+        placeholder="Your API key from the relay dashboard"
+        placeholderTextColor="#718096"
+        secureTextEntry={false}
+        style={
+          {
+            "backgroundColor": "#0f3460",
+            "borderColor": "#2d3748",
+            "borderRadius": 8,
+            "borderWidth": 1,
+            "color": "#ffffff",
+            "fontSize": 14,
+            "padding": 12,
+          }
+        }
+        value=""
+      />
+      <Text
+        style={
+          {
+            "color": "#718096",
+            "fontSize": 10,
+            "marginTop": 4,
+          }
+        }
+      >
+        Get your API key from the relay server dashboard after signing up.
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "marginBottom": 24,
+          "marginHorizontal": 16,
+        }
+      }
+    >
+      <View
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "justifyContent": "space-between",
+            "marginBottom": 8,
+          }
+        }
+      >
+        <Text
+          style={
+            {
+              "color": "#ffffff",
+              "fontSize": 14,
+              "fontWeight": "600",
+              "letterSpacing": 0.5,
+              "marginBottom": 8,
+              "textTransform": "uppercase",
+            }
+          }
+        >
+          Foundry World (Client)
+        </Text>
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": false,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "backgroundColor": "#1a3a5c",
+              "borderColor": "#e94560",
+              "borderRadius": 6,
+              "borderWidth": 1,
+              "opacity": 1,
+              "paddingHorizontal": 12,
+              "paddingVertical": 4,
+            }
+          }
+        >
+          <Text
+            style={
+              {
+                "color": "#e94560",
+                "fontSize": 12,
+                "fontWeight": "600",
+              }
+            }
+          >
+            Refresh
+          </Text>
+        </View>
+      </View>
+      <Text
+        style={
+          {
+            "color": "#718096",
+            "fontSize": 12,
+            "paddingVertical": 16,
+            "textAlign": "center",
+          }
+        }
+      >
+        Tap "Refresh" to load connected Foundry worlds.
+      </Text>
+      <View
+        style={
+          {
+            "marginBottom": 24,
+            "marginHorizontal": 16,
+          }
+        }
+      >
+        <Text
+          style={
+            {
+              "color": "#ffffff",
+              "fontSize": 14,
+              "fontWeight": "600",
+              "letterSpacing": 0.5,
+              "marginBottom": 8,
+              "textTransform": "uppercase",
+            }
+          }
+        >
+          Manual Client ID
+        </Text>
+        <TextInput
+          autoCapitalize="none"
+          autoCorrect={false}
+          onChangeText={[Function]}
+          placeholder="Enter client ID manually"
+          placeholderTextColor="#718096"
+          style={
+            {
+              "backgroundColor": "#0f3460",
+              "borderColor": "#2d3748",
+              "borderRadius": 8,
+              "borderWidth": 1,
+              "color": "#ffffff",
+              "fontSize": 14,
+              "padding": 12,
+            }
+          }
+          value=""
+        />
+      </View>
+    </View>
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "alignItems": "center",
+          "backgroundColor": "#e94560",
+          "borderRadius": 10,
+          "marginBottom": 24,
+          "marginHorizontal": 16,
+          "opacity": 1,
+          "padding": 16,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#ffffff",
+            "fontSize": 16,
+            "fontWeight": "bold",
+          }
+        }
+      >
+        Save & Continue →
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "alignItems": "center",
+          "paddingBottom": 32,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#718096",
+            "fontSize": 10,
+          }
+        }
+      >
+        Silvertree Mobile Sheet • Pathfinder 2nd Edition
+      </Text>
+    </View>
+  </View>
+</RCTScrollView>
+`;

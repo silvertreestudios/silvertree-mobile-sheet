@@ -114,4 +114,4 @@ echo "[setup] Configuration complete, starting FoundryVTT..."
 echo "========================================"
 
 # Delegate to the base image's entrypoint
-exec /docker-entrypoint.sh "$@"
+exec /home/node/entrypoint.sh "$@"

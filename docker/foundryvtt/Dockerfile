@@ -20,3 +20,4 @@ ENV FOUNDRY_WORLD="" \
     FOUNDRY_REST_API_MODULE_VERSION="latest"
 
 ENTRYPOINT ["/opt/foundryvtt-setup/entrypoint.sh"]
+CMD ["resources/app/main.mjs", "--port=30000", "--headless", "--noupdate", "--dataPath=/data"]

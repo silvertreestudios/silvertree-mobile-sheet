@@ -15,7 +15,9 @@ services:
   # Relay Server — must start first (FoundryVTT module connects to it)
   # --------------------------------------------------------------------------
   relay:
-    image: threehats/foundryvtt-rest-api-relay:latest
+    build:
+      context: ./docker/relay
+      dockerfile: Dockerfile
     container_name: relay
     ports:
       - "3010:3010"
@@ -27,7 +29,6 @@ services:
       DAILY_REQUEST_LIMIT: "999999999"
     volumes:
       - relay-data:/app/data
-    command: pnpm local:sqlite
     healthcheck:
       test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3010/', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))\""]
       interval: 10s

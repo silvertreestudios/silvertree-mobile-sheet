@@ -44,7 +44,7 @@ export default function SpellsTab({ character }: Props) {
   const keyAbilityMod = sys?.abilities?.[keyAbility as keyof NonNullable<typeof sys.abilities>]?.mod;
 
   const allSpells = (character.items ?? []).filter((i) => i.type === 'spell');
-  const cantrips = allSpells.filter((s) => (s.system?.level?.value ?? 0) === 0 || s.system?.traits?.value?.includes('cantrip'));
+  const cantrips = allSpells.filter((s) => ((s.system?.level?.value ?? 0) === 0 || s.system?.traits?.value?.includes('cantrip')) && !s.system?.traits?.value?.includes('focus'));
   const regularSpells = allSpells.filter((s) => (s.system?.level?.value ?? 0) > 0 && !s.system?.traits?.value?.includes('cantrip'));
   const focusSpells = allSpells.filter((s) => s.system?.traits?.value?.includes('focus'));
   const nonFocusSpells = regularSpells.filter((s) => !s.system?.traits?.value?.includes('focus'));

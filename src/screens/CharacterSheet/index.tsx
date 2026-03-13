@@ -7,8 +7,7 @@ import {
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Colors, FontSize, Spacing } from '../../utils/theme';
 import { RootStackParamList } from '../../types';
 import CharacterHeader from '../../components/CharacterHeader';
@@ -36,7 +35,6 @@ const TABS: { key: TabKey; label: string }[] = [
 ];
 
 export default function CharacterSheetScreen({ route }: ScreenProps) {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { character: routeCharacter } = route.params;
   const { character: contextCharacter, refreshCharacter, isLoading } = useApp();
   const [activeTab, setActiveTab] = useState<TabKey>('about');

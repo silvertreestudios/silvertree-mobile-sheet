@@ -9,7 +9,6 @@ import { Colors, FontSize, Spacing, ABILITY_LABELS } from '../../utils/theme';
 import { PF2eCharacter } from '../../types';
 import { formatMod } from '../../utils/formatters';
 import ProficiencyIndicator from '../../components/ProficiencyIndicator';
-import SectionBanner from '../../components/SectionBanner';
 
 interface Props {
   character: PF2eCharacter;

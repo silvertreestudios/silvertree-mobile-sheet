@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Colors, FontSize, Spacing, SKILL_LABELS, ABILITY_LABELS } from '../../utils/theme';
 import { PF2eCharacter } from '../../types';

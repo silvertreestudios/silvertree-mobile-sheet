@@ -20,16 +20,16 @@ interface FeatGroup {
   items: PF2eItem[];
 }
 
-function groupFeats(items: PF2eItem[]): FeatGroup[] {
+function groupFeats(items: PF2eItem[], className: string): FeatGroup[] {
+  const classLabel = `${className.toUpperCase()} FEAT`;
   const groups: Record<string, PF2eItem[]> = {};
 
   for (const item of items) {
-    // Try to determine feat category from type or traits
     const traits = item.system?.traits?.value ?? [];
     let category = 'FEAT';
 
     if (item.type === 'classFeature' || traits.includes('class')) {
-      category = 'CLERIC FEAT'; // Will use class name ideally
+      category = classLabel;
     } else if (item.type === 'ancestryFeature' || traits.includes('ancestry')) {
       category = 'ANCESTRY FEAT';
     } else if (traits.includes('general')) {
@@ -44,8 +44,7 @@ function groupFeats(items: PF2eItem[]): FeatGroup[] {
     groups[category].push(item);
   }
 
-  // Sort order: class, general, ancestry/human, skill
-  const order = ['CLERIC FEAT', 'CLASS FEAT', 'GENERAL FEAT', 'ANCESTRY FEAT', 'HUMAN FEAT', 'SKILL FEAT', 'FEAT'];
+  const order = [classLabel, 'GENERAL FEAT', 'ANCESTRY FEAT', 'HUMAN FEAT', 'SKILL FEAT', 'FEAT'];
   const result: FeatGroup[] = [];
   for (const label of order) {
     if (groups[label] && groups[label].length > 0) {
@@ -67,7 +66,8 @@ export default function FeatsTab({ character }: Props) {
   const feats = items.filter((i) =>
     ['feat', 'classFeature', 'ancestryFeature', 'heritage'].includes(i.type)
   );
-  const featGroups = groupFeats(feats);
+  const className = character.system?.details?.class?.value ?? 'Class';
+  const featGroups = groupFeats(feats, className);
 
   // Specials: actions, class features that aren't feats
   const specials = items.filter((i) =>

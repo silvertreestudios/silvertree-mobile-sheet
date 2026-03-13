@@ -32,7 +32,16 @@ check_command() {
 
 MISSING=0
 check_command podman || MISSING=1
-check_command podman-compose || check_command docker-compose || MISSING=1
+COMPOSE_CMD=""
+if command -v podman-compose &> /dev/null; then
+    COMPOSE_CMD="podman-compose"
+elif command -v docker-compose &> /dev/null; then
+    COMPOSE_CMD="docker-compose"
+else
+    echo "  ✗ No compose tool found. Install podman-compose or docker-compose."
+    MISSING=1
+fi
+[ -n "${COMPOSE_CMD}" ] && echo "  ✓ ${COMPOSE_CMD} found: $(command -v "${COMPOSE_CMD}")"
 
 if [ "${MISSING}" -ne 0 ]; then
     echo ""
@@ -79,7 +88,7 @@ echo " Next steps:"
 echo "   1. Edit .env with your FoundryVTT credentials and license key"
 echo "   2. Place your world snapshot in docker/worlds/<world-name>/"
 echo "   3. Set FOUNDRY_WORLD=<world-name> in .env"
-echo "   4. Run: podman-compose up --build"
+echo "   4. Run: ${COMPOSE_CMD} up --build"
 echo "   5. Visit http://localhost:3010 to create a relay API key"
 echo "   6. Set RELAY_API_KEY=<key> in .env and restart"
 echo ""

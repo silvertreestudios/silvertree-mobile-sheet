@@ -16,8 +16,7 @@ RUN chmod +x /opt/foundryvtt-setup/entrypoint.sh
 # Environment variables with defaults
 ENV FOUNDRY_WORLD="" \
     RELAY_URL="ws://relay:3010/" \
-    RELAY_API_KEY="" \
-    FOUNDRY_REST_API_MODULE_VERSION="latest"
+    RELAY_API_KEY=""
 
 ENTRYPOINT ["/opt/foundryvtt-setup/entrypoint.sh"]
 CMD ["resources/app/main.mjs", "--port=30000", "--headless", "--noupdate", "--dataPath=/data"]

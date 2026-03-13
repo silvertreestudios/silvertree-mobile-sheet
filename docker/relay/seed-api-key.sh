@@ -50,7 +50,7 @@ echo "[seed] Logging in..."
 LOGIN_RESPONSE=$(curl -sf -X POST "${RELAY_URL}/auth/login" \
     -H "Content-Type: application/json" \
     -d "{\"email\": \"${TEST_EMAIL}\", \"password\": \"${TEST_PASSWORD}\"}" \
-    2>&1)
+    2>&1) || true
 
 TOKEN=$(echo "${LOGIN_RESPONSE}" | jq -r '.token // .accessToken // empty')
 

@@ -33,8 +33,15 @@ function Test-Prerequisite {
 }
 
 if (-not (Test-Prerequisite "podman")) { $Missing++ }
-$hasCompose = (Test-Prerequisite "podman-compose") -or (Test-Prerequisite "docker-compose")
-if (-not $hasCompose) { $Missing++ }
+$ComposeCmd = $null
+if (Get-Command "podman-compose" -ErrorAction SilentlyContinue) {
+    $ComposeCmd = "podman-compose"
+} elseif (Get-Command "docker-compose" -ErrorAction SilentlyContinue) {
+    $ComposeCmd = "docker-compose"
+} else {
+    Write-Host "  ✗ No compose tool found. Install podman-compose or docker-compose."
+    $Missing++
+}
 
 if ($Missing -gt 0) {
     Write-Host ""
@@ -87,7 +94,7 @@ Write-Host " Next steps:"
 Write-Host "   1. Edit .env with your FoundryVTT credentials and license key"
 Write-Host "   2. Place your world snapshot in docker\worlds\<world-name>\"
 Write-Host "   3. Set FOUNDRY_WORLD=<world-name> in .env"
-Write-Host "   4. Run: podman-compose up --build"
+Write-Host "   4. Run: $ComposeCmd up --build"
 Write-Host "   5. Visit http://localhost:3010 to create a relay API key"
 Write-Host "   6. Set RELAY_API_KEY=<key> in .env and restart"
 Write-Host ""

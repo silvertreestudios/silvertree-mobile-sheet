@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
   },
   label: {
-    color: Colors.textMuted,
+    color: Colors.textSecondary,
     fontWeight: '600',
     letterSpacing: 1,
     textTransform: 'uppercase',

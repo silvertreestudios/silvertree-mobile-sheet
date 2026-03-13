@@ -27,6 +27,7 @@ export interface SavingThrow {
   value: number;
   totalModifier?: number;
   breakdown?: string;
+  rank?: number; // 0=untrained, 1=trained, 2=expert, 3=master, 4=legendary
 }
 
 // PF2e skill
@@ -64,6 +65,7 @@ export interface Perception {
   value: number;
   totalModifier?: number;
   breakdown?: string;
+  rank?: number; // 0=untrained, 1=trained, 2=expert, 3=master, 4=legendary
 }
 
 // PF2e item (feat, action, spell, equipment)
@@ -84,6 +86,7 @@ export interface PF2eItem {
     bulk?: { value?: number };
     weight?: { value?: number };
     slug?: string;
+    checkPenalty?: number;
     duration?: { value?: string };
     range?: { value?: string };
     target?: { value?: string };
@@ -110,6 +113,8 @@ export interface PF2eCharacter {
       age?: { value?: string };
       gender?: { value?: string };
       deity?: { value?: string };
+      keyability?: { value?: string };
+      languages?: { value?: string[] };
     };
     abilities?: {
       str?: AbilityScore;
@@ -124,7 +129,7 @@ export interface PF2eCharacter {
       ac?: ArmorClass;
       speed?: Speed;
       perception?: Perception;
-      classDC?: { value?: number };
+      classDC?: { value?: number; rank?: number };
       shield?: {
         hp?: { value?: number; max?: number };
         raised?: boolean;

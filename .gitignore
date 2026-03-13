@@ -36,7 +36,6 @@ yarn-error.*
 
 # Local Podman E2E environment
 docker/worlds/
-docker/relay/src/
 
 # test coverage
 coverage/

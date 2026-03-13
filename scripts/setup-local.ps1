@@ -7,7 +7,6 @@ $ErrorActionPreference = "Stop"
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = Split-Path -Parent $ScriptDir
-$RelaySrcDir = Join-Path $ProjectRoot "docker\relay\src"
 
 Write-Host "========================================"
 Write-Host " Silver Tree Mobile — Local E2E Setup"
@@ -47,26 +46,7 @@ if ($Missing -gt 0) {
 Write-Host ""
 
 # ---------------------------------------------------------------------------
-# 2. Clone the relay server repository
-# ---------------------------------------------------------------------------
-Write-Host "[setup] Setting up relay server source..."
-
-if ((Test-Path $RelaySrcDir) -and (Test-Path (Join-Path $RelaySrcDir "package.json"))) {
-    Write-Host "  Relay source already exists at $RelaySrcDir"
-    Write-Host "  Pulling latest changes..."
-    Push-Location $RelaySrcDir
-    try { git pull --ff-only 2>$null } catch { Write-Host "  (could not pull, using existing)" }
-    Pop-Location
-} else {
-    Write-Host "  Cloning ThreeHats/foundryvtt-rest-api-relay..."
-    if (Test-Path $RelaySrcDir) { Remove-Item -Recurse -Force $RelaySrcDir }
-    git clone --depth 1 https://github.com/ThreeHats/foundryvtt-rest-api-relay.git $RelaySrcDir
-}
-
-Write-Host ""
-
-# ---------------------------------------------------------------------------
-# 3. Create .env from template
+# 2. Create .env from template
 # ---------------------------------------------------------------------------
 Write-Host "[setup] Setting up environment file..."
 
@@ -84,7 +64,7 @@ if (Test-Path $EnvFile) {
 Write-Host ""
 
 # ---------------------------------------------------------------------------
-# 4. Create worlds directory
+# 3. Create worlds directory
 # ---------------------------------------------------------------------------
 Write-Host "[setup] Setting up worlds directory..."
 

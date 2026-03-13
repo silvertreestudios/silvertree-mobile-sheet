@@ -9,7 +9,6 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "${SCRIPT_DIR}")"
-RELAY_SRC_DIR="${PROJECT_ROOT}/docker/relay/src"
 
 echo "========================================"
 echo " Silver Tree Mobile — Local E2E Setup"
@@ -47,25 +46,7 @@ fi
 echo ""
 
 # ---------------------------------------------------------------------------
-# 2. Clone the relay server repository
-# ---------------------------------------------------------------------------
-echo "[setup] Setting up relay server source..."
-
-if [ -d "${RELAY_SRC_DIR}" ] && [ -f "${RELAY_SRC_DIR}/package.json" ]; then
-    echo "  Relay source already exists at ${RELAY_SRC_DIR}"
-    echo "  Pulling latest changes..."
-    cd "${RELAY_SRC_DIR}" && git pull --ff-only 2>/dev/null || echo "  (could not pull, using existing)"
-    cd "${PROJECT_ROOT}"
-else
-    echo "  Cloning ThreeHats/foundryvtt-rest-api-relay..."
-    rm -rf "${RELAY_SRC_DIR}"
-    git clone --depth 1 https://github.com/ThreeHats/foundryvtt-rest-api-relay.git "${RELAY_SRC_DIR}"
-fi
-
-echo ""
-
-# ---------------------------------------------------------------------------
-# 3. Create .env from template
+# 2. Create .env from template
 # ---------------------------------------------------------------------------
 echo "[setup] Setting up environment file..."
 
@@ -80,7 +61,7 @@ fi
 echo ""
 
 # ---------------------------------------------------------------------------
-# 4. Create worlds directory
+# 3. Create worlds directory
 # ---------------------------------------------------------------------------
 echo "[setup] Setting up worlds directory..."
 

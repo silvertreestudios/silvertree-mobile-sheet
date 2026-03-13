@@ -89,11 +89,7 @@ configure_auto_launch() {
         mv "${TMP}" "${OPTIONS_JSON}"
     else
         # Create new options.json with world auto-launch
-        cat > "${OPTIONS_JSON}" <<EOF
-{
-    "world": "${FOUNDRY_WORLD}"
-}
-EOF
+        jq -n --arg world "${FOUNDRY_WORLD}" '{world: $world}' > "${OPTIONS_JSON}"
     fi
 
     echo "[setup] Configured auto-launch for world: ${FOUNDRY_WORLD}"

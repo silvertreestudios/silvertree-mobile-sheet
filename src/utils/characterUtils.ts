@@ -279,12 +279,7 @@ export function getHeroPoints(character: PF2eCharacter): {
   value: number;
   max: number;
 } | undefined {
-  const fromResources = character.system?.resources as
-    | { heroPoints?: { value?: number; max?: number }; focus?: unknown }
-    | undefined;
-  const fromAttrs = character.system?.attributes?.heroPoints;
-
-  const hp = fromResources?.heroPoints ?? fromAttrs;
+  const hp = character.system?.resources?.heroPoints ?? character.system?.attributes?.heroPoints;
   if (!hp) return undefined;
   return { value: hp.value ?? 0, max: hp.max ?? 3 };
 }

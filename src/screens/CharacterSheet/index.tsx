@@ -19,6 +19,7 @@ import SpellsTab from './SpellsTab';
 import FeatsTab from './FeatsTab';
 import GearTab from './GearTab';
 import { useApp } from '../../contexts/AppContext';
+import { enrichCharacterData } from '../../utils/characterUtils';
 
 type ScreenProps = NativeStackScreenProps<RootStackParamList, 'CharacterSheet'>;
 
@@ -40,7 +41,8 @@ export default function CharacterSheetScreen({ route }: ScreenProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('about');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const character = contextCharacter ?? routeCharacter;
+  const rawCharacter = contextCharacter ?? routeCharacter;
+  const character = enrichCharacterData(rawCharacter);
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);

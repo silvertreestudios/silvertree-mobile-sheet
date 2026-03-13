@@ -289,3 +289,110 @@ export function formatMod(n: number | undefined | null): string {
   if (n === undefined || n === null) return '—';
   return n >= 0 ? `+${n}` : `${n}`;
 }
+
+const SIZE_LABELS: Record<string, string> = {
+  tiny: 'Tiny', sm: 'Small', med: 'Medium',
+  lrg: 'Large', huge: 'Huge', grg: 'Gargantuan',
+};
+
+/**
+ * Enriches a PF2eCharacter by filling missing system fields with computed
+ * values derived from items/source data. This bridges the gap between
+ * PF2e v13 source data (returned by the relay) and the fully-computed
+ * data that UI components expect.
+ *
+ * Only fills fields that are null/undefined/empty — never overwrites
+ * existing data from a system that provides computed values natively.
+ */
+export function enrichCharacterData(character: PF2eCharacter): PF2eCharacter {
+  const computed = computeCharacterStats(character);
+  if (!computed) return character;
+
+  const charDetails = extractCharacterDetails(character);
+  const heroPoints = getHeroPoints(character);
+  const items = character.items ?? [];
+  const ancestryItem = getItemOfType(items, 'ancestry');
+  const ancestrySys = itemSys(ancestryItem);
+
+  // Deep clone to avoid mutation
+  const enriched: PF2eCharacter = JSON.parse(JSON.stringify(character));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sys = (enriched.system ??= {}) as any;
+
+  // --- Abilities ---
+  if (!sys.abilities || Object.keys(sys.abilities).length === 0) {
+    sys.abilities = {};
+    for (const [key, mod] of Object.entries(computed.abilityMods)) {
+      sys.abilities[key] = { mod, value: 10 + mod * 2 };
+    }
+  }
+
+  // --- Saves ---
+  if (!sys.saves) {
+    sys.saves = {
+      fortitude: { totalModifier: computed.saves.fortitude, value: computed.saves.fortitude, rank: computed.saveRanks.fortitude },
+      reflex: { totalModifier: computed.saves.reflex, value: computed.saves.reflex, rank: computed.saveRanks.reflex },
+      will: { totalModifier: computed.saves.will, value: computed.saves.will, rank: computed.saveRanks.will },
+    };
+  }
+
+  // --- Skills ---
+  if (!sys.skills || Object.keys(sys.skills).length === 0) {
+    sys.skills = {};
+    for (const [skill, data] of Object.entries(computed.skills)) {
+      sys.skills[skill] = { totalModifier: data.mod, mod: data.mod, value: data.mod, rank: data.rank };
+    }
+  }
+
+  // --- Attributes ---
+  const attrs = (sys.attributes ??= {});
+  if (!attrs.ac?.value && attrs.ac?.value !== 0) {
+    attrs.ac = { ...(attrs.ac ?? {}), value: computed.ac };
+  }
+  if (!attrs.speed?.value && attrs.speed?.value !== 0) {
+    attrs.speed = { ...(attrs.speed ?? {}), value: computed.speed };
+  }
+  if (!attrs.perception?.totalModifier && attrs.perception?.totalModifier !== 0) {
+    attrs.perception = {
+      totalModifier: computed.perception,
+      value: computed.perception,
+      rank: computed.perceptionRank,
+    };
+  }
+  if (attrs.hp && !attrs.hp.max) {
+    attrs.hp.max = computed.hpMax;
+  }
+  if (!attrs.classDC) {
+    attrs.classDC = { value: computed.classDC, rank: 1 };
+  }
+  if (!attrs.heroPoints && heroPoints) {
+    attrs.heroPoints = heroPoints;
+  }
+
+  // --- Traits (size) ---
+  if (!sys.traits?.size?.value && ancestrySys?.size) {
+    sys.traits ??= {};
+    const rawSize = ancestrySys.size as string;
+    sys.traits.size = { value: SIZE_LABELS[rawSize] ?? rawSize };
+  }
+
+  // --- Details from items ---
+  const details = (sys.details ??= {});
+  if (!details.class?.value && charDetails.class) {
+    details.class = { ...(details.class ?? {}), value: charDetails.class };
+  }
+  if (!details.ancestry?.value && charDetails.ancestry) {
+    details.ancestry = { ...(details.ancestry ?? {}), value: charDetails.ancestry };
+  }
+  if (!details.heritage?.value && charDetails.heritage) {
+    details.heritage = { ...(details.heritage ?? {}), value: charDetails.heritage };
+  }
+  if (!details.background?.value && charDetails.background) {
+    details.background = { ...(details.background ?? {}), value: charDetails.background };
+  }
+  if (!details.deity?.value && charDetails.deity) {
+    details.deity = { ...(details.deity ?? {}), value: charDetails.deity };
+  }
+
+  return enriched;
+}

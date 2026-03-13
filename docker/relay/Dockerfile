@@ -11,5 +11,7 @@ RUN npm install -g node-gyp@latest \
     && node-gyp rebuild \
     && npm uninstall -g node-gyp
 
-# Drop back to non-root for runtime
+# Drop back to non-root for runtime — ensure writable dirs exist first
+RUN mkdir -p /app/uploads /app/data && chown -R node:node /app/uploads /app/data
+
 USER node

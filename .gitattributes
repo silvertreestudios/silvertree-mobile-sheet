@@ -2,7 +2,6 @@
 *.sh text eol=lf
 docker/**/*.sh text eol=lf
 docker/**/*.js text eol=lf
-
 # Git LFS tracking for world snapshot binaries
 docker/worlds/**/*.db filter=lfs diff=lfs merge=lfs -text
 docker/worlds/**/*.png filter=lfs diff=lfs merge=lfs -text
@@ -18,3 +17,6 @@ docker/worlds/**/*.mp4 filter=lfs diff=lfs merge=lfs -text
 docker/worlds/**/*.webm filter=lfs diff=lfs merge=lfs -text
 docker/worlds/**/*.pdf filter=lfs diff=lfs merge=lfs -text
 docker/worlds/**/*.zip filter=lfs diff=lfs merge=lfs -text
+docker/worlds/**/*.ldb filter=lfs diff=lfs merge=lfs -text
+docker/worlds/**/*.log filter=lfs diff=lfs merge=lfs -text
+docker/worlds/**/MANIFEST-* filter=lfs diff=lfs merge=lfs -text

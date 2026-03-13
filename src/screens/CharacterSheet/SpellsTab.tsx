@@ -94,7 +94,7 @@ export default function SpellsTab({ character }: Props) {
               <Text style={styles.dcText}>DC {classDC.value ?? '—'}</Text>
               <ProficiencyIndicator rank={classDC.rank ?? 0} />
               <Text style={styles.breakdownText}>{keyAbilityLabel}{'\n'}{formatMod(keyAbilityMod)}</Text>
-              <Text style={styles.breakdownText}>Prof{'\n'}+0</Text>
+              <Text style={styles.breakdownText}>Prof{'\n'}{formatMod(classDC.rank ? classDC.rank * 2 + (sys?.details?.level?.value ?? 1) : 0)}</Text>
               <Text style={styles.breakdownText}>Item{'\n'}+0</Text>
             </View>
             <Text style={styles.saText}>SA {formatMod(classDC.value ? classDC.value - 10 : undefined)}</Text>

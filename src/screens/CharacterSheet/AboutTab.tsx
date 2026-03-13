@@ -111,22 +111,24 @@ export default function AboutTab({ character }: Props) {
           { label: 'Age', value: details?.age?.value },
         ].filter(d => d.value).map((detail) => {
           if (detail.label === 'Deity') {
+            const ageValue = details?.age?.value;
             return (
               <View key={detail.label} style={styles.detailsRow}>
                 <View style={styles.detailFieldHalf}>
                   <Text style={styles.detailFieldLabel}>Deity</Text>
                   <Text style={styles.detailFieldValue}>{detail.value}</Text>
                 </View>
-                {details?.age?.value && (
+                {ageValue && (
                   <View style={styles.detailFieldHalf}>
                     <Text style={styles.detailFieldLabel}>Age</Text>
-                    <Text style={styles.detailFieldValue}>{details.age.value}</Text>
+                    <Text style={styles.detailFieldValue}>{ageValue}</Text>
                   </View>
                 )}
               </View>
             );
           }
-          if (detail.label === 'Age') return null; // handled with Deity
+          // Age is rendered alongside Deity when both exist; render standalone otherwise
+          if (detail.label === 'Age' && details?.deity?.value) return null;
           return (
             <View key={detail.label} style={styles.detailField}>
               <Text style={styles.detailFieldLabel}>{detail.label}</Text>

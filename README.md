@@ -76,78 +76,171 @@ The app communicates with the [FoundryVTT REST API Relay](https://foundryvtt-res
 
 All requests require the `x-api-key` header with your API key.
 
-## Local E2E Environment (Podman)
+## Local E2E Environment
 
 A containerized setup for running the full stack locally — FoundryVTT, relay server, and the mobile app (web build) — for end-to-end testing against a known world snapshot.
 
 ### Architecture
 
 ```
-FoundryVTT (port 30000) ──WebSocket──► Relay Server (port 3010) ◄──REST── Mobile App (port 8081)
+Browser (GM session)
+    │
+    ▼ WebSocket (ws://localhost:3010/)
+┌─────────────────┐         ┌──────────────┐         ┌──────────────┐
+│  FoundryVTT     │◄───────►│ Relay Server │◄───REST──│  Mobile App  │
+│  :30000         │ module   │  :3010       │         │  :8081       │
+└─────────────────┘         └──────────────┘         └──────────────┘
 ```
+
+> **Key concept:** The FoundryVTT REST API module runs **client-side in the GM's browser**, not inside the Foundry container. The browser connects to the relay via WebSocket at `ws://localhost:3010/`. A GM must be logged into the Foundry world for the relay to have access to game data.
 
 ### Prerequisites
 
-- [Podman](https://podman.io/) and [podman-compose](https://github.com/containers/podman-compose) (or Docker/docker-compose)
-- Git
-- A [FoundryVTT](https://foundryvtt.com) license
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (or Podman + podman-compose)
+- A [FoundryVTT](https://foundryvtt.com) license (username, password, and license key)
+- [Git LFS](https://git-lfs.github.com/) (for world snapshot binaries)
 
 ### Quick Start
 
+#### 1. Bootstrap
+
 ```bash
-# 1. Run the setup script (clones relay repo, creates .env)
+# Pull LFS files (world snapshots)
+git lfs pull
+
+# Run the setup script
 # Linux/Mac:
 chmod +x scripts/setup-local.sh && ./scripts/setup-local.sh
 # Windows:
 .\scripts\setup-local.ps1
-
-# 2. Edit .env with your FoundryVTT credentials and license key
-#    Set FOUNDRY_WORLD to your world folder name
-
-# 3. Place your world snapshot in docker/worlds/<world-name>/
-
-# 4. Start the stack
-podman-compose up --build
-
-# 5. First run only: create a relay API key
-#    Visit http://localhost:3010, create an account, generate a key
-#    OR run: bash docker/relay/seed-api-key.sh
-#    Then set RELAY_API_KEY=<key> in .env and restart
-
-# 6. Access the services
-#    FoundryVTT:  http://localhost:30000
-#    Relay:       http://localhost:3010
-#    Mobile App:  http://localhost:8081
 ```
+
+#### 2. Configure `.env`
+
+Edit `.env` with your credentials (see [`.env.example`](.env.example) for all options):
+
+```env
+FOUNDRY_USERNAME=your-foundry-username
+FOUNDRY_PASSWORD=your-foundry-password
+FOUNDRY_LICENSE_KEY=XXXX-XXXX-XXXX-XXXX-XXXX-XXXX
+FOUNDRY_WORLD=pathfinder2e-test
+```
+
+#### 3. Start the stack
+
+```bash
+docker-compose up --build
+# or: podman-compose up --build
+```
+
+Wait for all three services to become healthy (relay starts first, then Foundry, then the mobile app). First build takes several minutes.
+
+#### 4. Create a relay API key
+
+```bash
+# Option A: Use the seed script
+bash docker/relay/seed-api-key.sh
+
+# Option B: Visit http://localhost:3010 in your browser
+#   → Register an account → Generate an API key
+```
+
+Add the key to `.env`:
+
+```env
+RELAY_API_KEY=your-generated-api-key
+```
+
+Then restart so all services pick up the key:
+
+```bash
+docker-compose down && docker-compose up -d
+```
+
+#### 5. First-time Foundry setup (browser)
+
+These steps are only needed the first time (or after `docker-compose down -v` which clears volumes):
+
+1. **Open** http://localhost:30000 in your browser
+2. **Accept the EULA** / verify your license when prompted
+3. **Log in as Gamemaster** (admin password is `admin`, set in `compose.yml`)
+4. **Enable the REST API module:**
+   - Go to **Game Settings → Manage Modules**
+   - Check **"FoundryVTT REST API"** and save
+5. **Verify the module's relay URL:**
+   - Go to **Game Settings → Module Settings → REST API**
+   - **Relay URL** must be `ws://localhost:3010/` (the browser needs localhost, not the Docker container name)
+   - **API Key** should match your `RELAY_API_KEY`
+6. **Stay logged in as GM** — the relay only has data access while a GM session is active
+
+> **Tip:** The entrypoint script auto-configures the module settings in the world database. However, on first run, Foundry may require you to manually enable the module and accept the license. After that, subsequent `docker-compose up` runs should work without browser interaction (as long as volumes are preserved).
+
+#### 6. Verify the connection
+
+```bash
+# Check that FoundryVTT appears as a connected client
+curl -s -H "x-api-key: YOUR_API_KEY" http://localhost:3010/clients | jq .
+```
+
+You should see a client with your `worldId` and `systemId`. See the [Relay API Debugging Guide](docs/relay-api-guide.md) for more query examples.
 
 ### Production Mode (for E2E Tests)
 
 Uses a static Expo web export served by nginx instead of the dev server:
 
 ```bash
-podman-compose -f compose.yml -f compose.prod.yml up --build
+docker-compose -f compose.yml -f compose.prod.yml up --build
 ```
 
 ### Daily Commands
 
 ```bash
-# Start (dev mode)
-podman-compose up
+# Start (dev mode, detached)
+docker-compose up -d
 
 # Start (production mode for e2e)
-podman-compose -f compose.yml -f compose.prod.yml up --build
+docker-compose -f compose.yml -f compose.prod.yml up --build
 
-# Stop
-podman-compose down
+# Stop (preserves volumes — world state, relay DB, etc.)
+docker-compose down
 
-# Reset all data (volumes)
-podman-compose down -v
+# Reset all data (removes volumes — clean slate for testing)
+docker-compose down -v
 
 # View logs
-podman-compose logs -f foundryvtt
-podman-compose logs -f relay
-podman-compose logs -f mobile-app
+docker-compose logs -f foundryvtt
+docker-compose logs -f relay
+docker-compose logs -f mobile-app
+
+# Rebuild a single service
+docker-compose up --build relay
 ```
+
+### World Snapshots
+
+World data lives in `docker/worlds/` and is bind-mounted into the Foundry container. Binary files (LevelDB, images, etc.) are tracked with **Git LFS**.
+
+```bash
+# After creating/modifying a world in Foundry, commit the snapshot:
+git add docker/worlds/
+git commit -m "feat: update world snapshot"
+
+# After pulling, ensure LFS files are downloaded:
+git lfs pull
+```
+
+The included `pathfinder2e-test` world contains a single PF2e character ("Fighter") for E2E testing.
+
+### Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| Relay container crashes with `sqlite3` error | The Dockerfile recompiles sqlite3 native bindings. If you see this, rebuild: `docker-compose build --no-cache relay` |
+| Foundry shows "no such file or directory" on entrypoint | Shell scripts have Windows CRLF line endings. Run `git checkout -- docker/` or ensure `.gitattributes` enforces LF. |
+| `/clients` returns empty array | A GM must be logged into the Foundry world in a browser. The REST API module is client-side. |
+| Module relay URL uses `ws://relay:3010/` | Change to `ws://localhost:3010/` in Foundry module settings — the browser runs on the host, not inside Docker. |
+| Port 8081 already in use | Kill the stale process: `netstat -ano \| findstr :8081` then `Stop-Process -Id <PID>` (Windows) or `lsof -ti:8081 \| xargs kill` (Mac/Linux). |
+| World data looks stale after `git pull` | Run `git lfs pull` to download updated binary files. |
 
 ### Environment Variables
 
@@ -158,5 +251,7 @@ See [`.env.example`](.env.example) for all configurable variables. Key ones:
 | `FOUNDRY_USERNAME` | FoundryVTT.com account username |
 | `FOUNDRY_PASSWORD` | FoundryVTT.com account password |
 | `FOUNDRY_LICENSE_KEY` | Your Foundry license key |
-| `FOUNDRY_WORLD` | World folder name to auto-launch |
-| `RELAY_API_KEY` | Shared API key for relay auth |
+| `FOUNDRY_WORLD` | World folder name to auto-launch (e.g., `pathfinder2e-test`) |
+| `RELAY_API_KEY` | Shared API key for relay authentication |
+| `RELAY_URL` | WebSocket URL for the REST API module (`ws://localhost:3010/`) |
+| `MOBILE_RELAY_URL` | REST URL the mobile app uses (`http://localhost:3010`) |

@@ -33,9 +33,6 @@ check_command() {
 MISSING=0
 check_command podman || MISSING=1
 check_command podman-compose || check_command docker-compose || MISSING=1
-check_command git || MISSING=1
-check_command curl || MISSING=1
-check_command jq || MISSING=1
 
 if [ "${MISSING}" -ne 0 ]; then
     echo ""

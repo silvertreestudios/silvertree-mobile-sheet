@@ -3,9 +3,6 @@ FROM node:20
 
 WORKDIR /app
 
-# Install expo-cli globally
-RUN npm install -g @expo/cli
-
 # Copy package files for dependency installation
 COPY package.json package-lock.json ./
 

@@ -35,7 +35,6 @@ function Test-Prerequisite {
 if (-not (Test-Prerequisite "podman")) { $Missing++ }
 $hasCompose = (Test-Prerequisite "podman-compose") -or (Test-Prerequisite "docker-compose")
 if (-not $hasCompose) { $Missing++ }
-if (-not (Test-Prerequisite "git")) { $Missing++ }
 
 if ($Missing -gt 0) {
     Write-Host ""

@@ -14,7 +14,7 @@ export default function RootNavigator() {
       initialRouteName="Settings"
       screenOptions={{
         headerStyle: {
-          backgroundColor: Colors.surface,
+          backgroundColor: Colors.headerBackground,
         },
         headerTintColor: Colors.textPrimary,
         headerTitleStyle: {

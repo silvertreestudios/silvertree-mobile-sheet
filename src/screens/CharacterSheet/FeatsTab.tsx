@@ -9,35 +9,63 @@ import {
 } from 'react-native';
 import { Colors, FontSize, Spacing } from '../../utils/theme';
 import { PF2eCharacter, PF2eItem } from '../../types';
+import SectionBanner from '../../components/SectionBanner';
 import { htmlToPlainText } from '../../utils/htmlUtils';
 
 interface Props {
   character: PF2eCharacter;
 }
 
-const ACTION_TYPES = ['action', 'reaction', 'free', 'passive'];
-const FEAT_TYPES = ['feat', 'classFeature', 'ancestryFeature', 'heritage'];
+const FEAT_TYPE_LABELS: Record<string, string> = {
+  classFeature: 'CLASS FEAT',
+  feat: 'FEAT',
+  ancestryFeature: 'ANCESTRY FEAT',
+  heritage: 'HERITAGE',
+};
 
-function ActionCost({ actions }: { actions?: string | number }) {
-  if (actions === undefined || actions === null || actions === '') return null;
-  const n = Number(actions);
-  if (!isNaN(n)) {
-    return (
-      <View style={styles.actionCost}>
-        <Text style={styles.actionCostText}>{'◆'.repeat(Math.min(n, 3))}</Text>
-      </View>
-    );
+interface FeatGroup {
+  label: string;
+  items: PF2eItem[];
+}
+
+function groupFeats(items: PF2eItem[]): FeatGroup[] {
+  const groups: Record<string, PF2eItem[]> = {};
+
+  for (const item of items) {
+    // Try to determine feat category from type or traits
+    const traits = item.system?.traits?.value ?? [];
+    let category = 'FEAT';
+
+    if (item.type === 'classFeature' || traits.includes('class')) {
+      category = 'CLERIC FEAT'; // Will use class name ideally
+    } else if (item.type === 'ancestryFeature' || traits.includes('ancestry')) {
+      category = 'ANCESTRY FEAT';
+    } else if (traits.includes('general')) {
+      category = 'GENERAL FEAT';
+    } else if (traits.includes('skill')) {
+      category = 'SKILL FEAT';
+    } else if (item.type === 'feat') {
+      category = 'GENERAL FEAT';
+    }
+
+    if (!groups[category]) groups[category] = [];
+    groups[category].push(item);
   }
-  const symbols: Record<string, string> = {
-    free: '◇',
-    reaction: '↺',
-    passive: '—',
-  };
-  return (
-    <View style={styles.actionCost}>
-      <Text style={styles.actionCostText}>{symbols[String(actions)] ?? String(actions)}</Text>
-    </View>
-  );
+
+  // Sort order: class, general, ancestry/human, skill
+  const order = ['CLERIC FEAT', 'CLASS FEAT', 'GENERAL FEAT', 'ANCESTRY FEAT', 'HUMAN FEAT', 'SKILL FEAT', 'FEAT'];
+  const result: FeatGroup[] = [];
+  for (const label of order) {
+    if (groups[label] && groups[label].length > 0) {
+      result.push({ label, items: groups[label] });
+      delete groups[label];
+    }
+  }
+  // Add any remaining
+  for (const [label, items] of Object.entries(groups)) {
+    if (items.length > 0) result.push({ label, items });
+  }
+  return result;
 }
 
 function ItemDetailModal({
@@ -92,109 +120,69 @@ export default function FeatsTab({ character }: Props) {
   const items = character.items ?? [];
   const [selected, setSelected] = useState<PF2eItem | null>(null);
 
-  const actions = items.filter((i) => ACTION_TYPES.includes(i.type));
-  const feats = items.filter((i) => FEAT_TYPES.includes(i.type));
-  const spells = items.filter((i) => i.type === 'spell');
+  const feats = items.filter((i) =>
+    ['feat', 'classFeature', 'ancestryFeature', 'heritage'].includes(i.type)
+  );
+  const featGroups = groupFeats(feats);
 
-  function getActionCostValue(
-    actionType: string | undefined,
-    numericActions: string | number | undefined
-  ): string | number | undefined {
-    if (actionType === 'passive') return 'passive';
-    if (actionType === 'reaction') return 'reaction';
-    if (actionType === 'free') return 'free';
-    return numericActions;
-  }
-
-  function renderAction(item: PF2eItem) {
-    const actionType = item.system?.actionType?.value;
-    const actions = item.system?.actions?.value;
-    const costValue = getActionCostValue(actionType, actions);
-    return (
-      <TouchableOpacity
-        key={item._id}
-        style={styles.itemRow}
-        onPress={() => setSelected(item)}
-        activeOpacity={0.7}
-      >
-        <View style={styles.itemLeft}>
-          <ActionCost actions={costValue} />
-        </View>
-        <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.itemArrow}>›</Text>
-      </TouchableOpacity>
-    );
-  }
-
-  function renderFeat(item: PF2eItem) {
-    const level = item.system?.level?.value;
-    return (
-      <TouchableOpacity
-        key={item._id}
-        style={styles.itemRow}
-        onPress={() => setSelected(item)}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.itemName} numberOfLines={1}>
-          {item.name}
-        </Text>
-        {level !== undefined && (
-          <Text style={styles.itemLevel}>Lvl {level}</Text>
-        )}
-        <Text style={styles.itemArrow}>›</Text>
-      </TouchableOpacity>
-    );
-  }
-
-  function renderSpell(item: PF2eItem) {
-    const level = item.system?.level?.value;
-    const traits = item.system?.traits?.value?.slice(0, 2) ?? [];
-    return (
-      <TouchableOpacity
-        key={item._id}
-        style={styles.itemRow}
-        onPress={() => setSelected(item)}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.itemName} numberOfLines={1}>
-          {item.name}
-        </Text>
-        <View style={styles.spellMeta}>
-          {level !== undefined && (
-            <Text style={styles.itemLevel}>Rank {level}</Text>
-          )}
-          {traits.map((t) => (
-            <View key={t} style={styles.traitBadgeSmall}>
-              <Text style={styles.traitTextSmall}>{t}</Text>
-            </View>
-          ))}
-        </View>
-        <Text style={styles.itemArrow}>›</Text>
-      </TouchableOpacity>
-    );
-  }
-
-  function renderSection(title: string, items: PF2eItem[], renderer: (item: PF2eItem) => React.ReactElement | null) {
-    if (items.length === 0) return null;
-    return (
-      <View style={styles.section} key={title}>
-        <Text style={styles.sectionTitle}>{title} ({items.length})</Text>
-        <View style={styles.card}>
-          {items.map(renderer)}
-        </View>
-      </View>
-    );
-  }
+  // Specials: actions, class features that aren't feats
+  const specials = items.filter((i) =>
+    ['action', 'reaction', 'free', 'passive'].includes(i.type) ||
+    (i.type === 'classFeature' && !feats.includes(i))
+  );
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {renderSection('Actions & Reactions', actions, renderAction)}
-      {renderSection('Feats & Features', feats, renderFeat)}
-      {renderSection('Spells', spells, renderSpell)}
+      <SectionBanner title="Feats" />
 
-      {actions.length === 0 && feats.length === 0 && spells.length === 0 && (
+      {featGroups.map((group) => (
+        <View key={group.label}>
+          <Text style={styles.categoryTitle}>{group.label}</Text>
+          {group.items.map((item) => {
+            const level = item.system?.level?.value;
+            return (
+              <TouchableOpacity
+                key={item._id}
+                style={styles.featRow}
+                onPress={() => setSelected(item)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.featName} numberOfLines={1}>
+                  {item.name}
+                </Text>
+                {level !== undefined && (
+                  <View style={styles.levelBadge}>
+                    <Text style={styles.levelText}>{level}</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      ))}
+
+      {/* Specials section */}
+      {specials.length > 0 && (
+        <>
+          <SectionBanner title="Specials" />
+          {specials.map((item) => (
+            <TouchableOpacity
+              key={item._id}
+              style={styles.featRow}
+              onPress={() => setSelected(item)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.featName} numberOfLines={1}>
+                {item.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </>
+      )}
+
+      {feats.length === 0 && specials.length === 0 && (
         <View style={styles.empty}>
-          <Text style={styles.emptyText}>No feats, actions, or spells found.</Text>
+          <Text style={styles.emptyText}>No feats or specials found.</Text>
         </View>
       )}
 
@@ -209,75 +197,43 @@ export default function FeatsTab({ character }: Props) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  content: { padding: Spacing.md },
-  section: { marginBottom: Spacing.lg },
-  sectionTitle: {
+  content: { paddingBottom: Spacing.xxl },
+  categoryTitle: {
     color: Colors.textMuted,
     fontSize: FontSize.xs,
     fontWeight: '700',
     letterSpacing: 1,
     textTransform: 'uppercase',
-    marginBottom: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.xs,
   },
-  card: {
-    backgroundColor: Colors.card,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    overflow: 'hidden',
-  },
-  itemRow: {
+  featRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.xl,
+    backgroundColor: Colors.card,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
-  itemLeft: {
-    marginRight: Spacing.sm,
-    width: 32,
-  },
-  itemName: {
+  featName: {
     flex: 1,
     color: Colors.textPrimary,
     fontSize: FontSize.md,
   },
-  itemLevel: {
-    color: Colors.textMuted,
-    fontSize: FontSize.xs,
-    marginRight: Spacing.sm,
-  },
-  itemArrow: {
-    color: Colors.textMuted,
-    fontSize: FontSize.lg,
-  },
-  actionCost: {
+  levelBadge: {
+    backgroundColor: Colors.sectionBanner,
+    borderRadius: 4,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2,
     minWidth: 28,
     alignItems: 'center',
   },
-  actionCostText: {
-    color: Colors.secondary,
+  levelText: {
+    color: Colors.textPrimary,
     fontSize: FontSize.sm,
-  },
-  spellMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: Spacing.sm,
-    gap: Spacing.xs,
-  },
-  traitBadgeSmall: {
-    backgroundColor: Colors.surface,
-    borderRadius: 4,
-    paddingHorizontal: 4,
-    paddingVertical: 2,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  traitTextSmall: {
-    color: Colors.textMuted,
-    fontSize: 9,
-    textTransform: 'capitalize',
+    fontWeight: '600',
   },
   empty: {
     alignItems: 'center',

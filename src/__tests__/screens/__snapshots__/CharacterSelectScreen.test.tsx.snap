@@ -4,7 +4,7 @@ exports[`CharacterSelectScreen renders correctly 1`] = `
 <View
   style={
     {
-      "backgroundColor": "#1a1a2e",
+      "backgroundColor": "#121212",
       "flex": 1,
     }
   }
@@ -12,7 +12,7 @@ exports[`CharacterSelectScreen renders correctly 1`] = `
   <View
     style={
       {
-        "borderBottomColor": "#2d3748",
+        "borderBottomColor": "#333333",
         "borderBottomWidth": 1,
         "paddingHorizontal": 16,
         "paddingVertical": 12,
@@ -152,8 +152,8 @@ exports[`CharacterSelectScreen renders correctly 1`] = `
     style={
       {
         "alignItems": "center",
-        "backgroundColor": "#16213e",
-        "borderColor": "#2d3748",
+        "backgroundColor": "#1e1e1e",
+        "borderColor": "#333333",
         "borderRadius": 8,
         "borderWidth": 1,
         "margin": 16,

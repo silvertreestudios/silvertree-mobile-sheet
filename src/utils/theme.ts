@@ -1,14 +1,21 @@
-// Color palette inspired by Pathbuilder 2e
+// Color palette matching Pathbuilder 2e dark theme
 export const Colors = {
   // Backgrounds
-  background: '#1a1a2e',
-  surface: '#16213e',
-  card: '#0f3460',
-  cardLight: '#1a3a5c',
+  background: '#121212',
+  surface: '#1e1e1e',
+  card: '#252525',
+  cardLight: '#2a2d35',
+
+  // Header
+  headerBackground: '#000000',
+
+  // Section banners (slate/blue-gray like Pathbuilder's level headers)
+  sectionBanner: '#3d4a5c',
+  sectionBannerText: '#ffffff',
 
   // Accents
-  primary: '#e94560',
-  primaryDark: '#c73652',
+  primary: '#5c8db5',
+  primaryDark: '#4a7a9e',
   secondary: '#f5a623',
   gold: '#d4a017',
 
@@ -36,13 +43,14 @@ export const Colors = {
   legendary: '#e94560',
 
   // Tab bar
-  tabActive: '#e94560',
-  tabInactive: '#718096',
-  tabBackground: '#0d0d1a',
+  tabActive: '#ffffff',
+  tabInactive: '#888888',
+  tabBackground: '#1a1a1a',
+  tabPillBorder: '#555555',
 
   // Borders
-  border: '#2d3748',
-  borderLight: '#4a5568',
+  border: '#333333',
+  borderLight: '#444444',
 };
 
 export const Spacing = {

@@ -5,42 +5,43 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-  RefreshControl,
   ScrollView,
-  Alert,
 } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Colors, FontSize, Spacing } from '../../utils/theme';
 import { RootStackParamList } from '../../types';
 import CharacterHeader from '../../components/CharacterHeader';
-import OverviewTab from './OverviewTab';
-import AbilitiesTab from './AbilitiesTab';
+import AboutTab from './AboutTab';
+import DefenseTab from './DefenseTab';
+import OffenseTab from './OffenseTab';
 import SkillsTab from './SkillsTab';
+import SpellsTab from './SpellsTab';
 import FeatsTab from './FeatsTab';
-import InventoryTab from './InventoryTab';
+import GearTab from './GearTab';
 import { useApp } from '../../contexts/AppContext';
 
 type ScreenProps = NativeStackScreenProps<RootStackParamList, 'CharacterSheet'>;
 
-type TabKey = 'overview' | 'abilities' | 'skills' | 'feats' | 'inventory';
+type TabKey = 'about' | 'defense' | 'offense' | 'gear' | 'skills' | 'spells' | 'feats';
 
 const TABS: { key: TabKey; label: string }[] = [
-  { key: 'overview', label: 'Overview' },
-  { key: 'abilities', label: 'Abilities' },
+  { key: 'about', label: 'About' },
+  { key: 'defense', label: 'Defense' },
+  { key: 'offense', label: 'Offense' },
+  { key: 'gear', label: 'Gear' },
   { key: 'skills', label: 'Skills' },
+  { key: 'spells', label: 'Spells' },
   { key: 'feats', label: 'Feats' },
-  { key: 'inventory', label: 'Inventory' },
 ];
 
 export default function CharacterSheetScreen({ route }: ScreenProps) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { character: routeCharacter } = route.params;
   const { character: contextCharacter, refreshCharacter, isLoading } = useApp();
-  const [activeTab, setActiveTab] = useState<TabKey>('overview');
+  const [activeTab, setActiveTab] = useState<TabKey>('about');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Use context character (most up-to-date) or fall back to route param
   const character = contextCharacter ?? routeCharacter;
 
   const handleRefresh = useCallback(async () => {
@@ -54,25 +55,29 @@ export default function CharacterSheetScreen({ route }: ScreenProps) {
 
   function renderTab() {
     switch (activeTab) {
-      case 'overview':
-        return <OverviewTab character={character} onRefresh={handleRefresh} />;
-      case 'abilities':
-        return <AbilitiesTab character={character} />;
+      case 'about':
+        return <AboutTab character={character} />;
+      case 'defense':
+        return <DefenseTab character={character} onRefresh={handleRefresh} />;
+      case 'offense':
+        return <OffenseTab character={character} />;
       case 'skills':
         return <SkillsTab character={character} />;
+      case 'spells':
+        return <SpellsTab character={character} />;
       case 'feats':
         return <FeatsTab character={character} />;
-      case 'inventory':
-        return <InventoryTab character={character} />;
+      case 'gear':
+        return <GearTab character={character} />;
     }
   }
 
   return (
     <View style={styles.container}>
-      {/* Character header */}
+      {/* Pathbuilder-style header */}
       <CharacterHeader character={character} />
 
-      {/* Tab bar */}
+      {/* Pill-style tab bar */}
       <View style={styles.tabBar}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabScroll}>
           {TABS.map((tab) => (
@@ -89,7 +94,6 @@ export default function CharacterSheetScreen({ route }: ScreenProps) {
               >
                 {tab.label}
               </Text>
-              {activeTab === tab.key && <View style={styles.tabIndicator} />}
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -109,7 +113,7 @@ export default function CharacterSheetScreen({ route }: ScreenProps) {
       {/* Refresh indicator */}
       {isRefreshing && (
         <View style={styles.refreshBar}>
-          <ActivityIndicator size="small" color={Colors.primary} />
+          <ActivityIndicator size="small" color={Colors.textPrimary} />
           <Text style={styles.refreshText}>Refreshing...</Text>
         </View>
       )}
@@ -126,35 +130,31 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.tabBackground,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
+    paddingVertical: Spacing.sm,
   },
   tabScroll: {
     paddingHorizontal: Spacing.sm,
   },
   tab: {
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.sm,
     marginHorizontal: Spacing.xs,
-    position: 'relative',
+    borderRadius: 20,
     alignItems: 'center',
   },
-  tabActive: {},
+  tabActive: {
+    borderWidth: 1,
+    borderColor: Colors.tabPillBorder,
+    backgroundColor: Colors.surface,
+  },
   tabText: {
     color: Colors.tabInactive,
-    fontSize: FontSize.sm,
+    fontSize: FontSize.md,
     fontWeight: '500',
   },
   tabTextActive: {
     color: Colors.tabActive,
-    fontWeight: '700',
-  },
-  tabIndicator: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 2,
-    backgroundColor: Colors.tabActive,
-    borderRadius: 1,
+    fontWeight: '600',
   },
   content: {
     flex: 1,

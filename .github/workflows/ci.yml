@@ -37,4 +37,3 @@ jobs:
 
       - name: Run snapshot tests
         run: npm run test:snapshot
-        continue-on-error: true

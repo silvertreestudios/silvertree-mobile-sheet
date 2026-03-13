@@ -7,16 +7,12 @@ import {
 } from 'react-native';
 import { Colors, FontSize, Spacing, ABILITY_LABELS } from '../../utils/theme';
 import { PF2eCharacter } from '../../types';
+import { formatMod } from '../../utils/formatters';
 import ProficiencyIndicator from '../../components/ProficiencyIndicator';
 import SectionBanner from '../../components/SectionBanner';
 
 interface Props {
   character: PF2eCharacter;
-}
-
-function formatMod(n: number | undefined): string {
-  if (n === undefined || n === null) return '—';
-  return n >= 0 ? `+${n}` : `${n}`;
 }
 
 export default function AboutTab({ character }: Props) {
@@ -69,7 +65,7 @@ export default function AboutTab({ character }: Props) {
         <View style={styles.dcSection}>
           <View style={styles.dcRow}>
             <Text style={styles.dcLabel}>Cleric DC {classDC.value ?? '—'}</Text>
-            <ProficiencyIndicator rank={0} />
+            <ProficiencyIndicator rank={classDC.rank ?? 0} />
             <Text style={styles.breakdownText}>Wis{'\n'}+{abilities.wis?.mod ?? 0}</Text>
             <Text style={styles.breakdownText}>Prof{'\n'}{formatMod(classDC.value ? classDC.value - 10 - (abilities.wis?.mod ?? 0) : undefined)}</Text>
             <Text style={styles.breakdownText}>Item{'\n'}0</Text>

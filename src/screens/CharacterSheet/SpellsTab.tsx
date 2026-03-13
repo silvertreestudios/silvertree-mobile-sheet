@@ -5,21 +5,16 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Modal,
 } from 'react-native';
 import { Colors, FontSize, Spacing } from '../../utils/theme';
 import { PF2eCharacter, PF2eItem } from '../../types';
+import { formatMod } from '../../utils/formatters';
 import ProficiencyIndicator from '../../components/ProficiencyIndicator';
 import SectionBanner from '../../components/SectionBanner';
-import { htmlToPlainText } from '../../utils/htmlUtils';
+import ItemDetailModal from '../../components/ItemDetailModal';
 
 interface Props {
   character: PF2eCharacter;
-}
-
-function formatMod(n: number | undefined): string {
-  if (n === undefined || n === null) return '—';
-  return n >= 0 ? `+${n}` : `${n}`;
 }
 
 interface SpellsByRank {
@@ -51,10 +46,6 @@ export default function SpellsTab({ character }: Props) {
   const focusSpells = allSpells.filter((s) => s.system?.traits?.value?.includes('focus'));
   const nonFocusSpells = regularSpells.filter((s) => !s.system?.traits?.value?.includes('focus'));
   const spellGroups = groupSpellsByRank(nonFocusSpells);
-
-  const desc = selected?.system?.description?.value ?? '';
-  const plainDesc = htmlToPlainText(desc);
-  const traits = selected?.system?.traits?.value ?? [];
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -98,7 +89,7 @@ export default function SpellsTab({ character }: Props) {
           <View style={styles.dcSection}>
             <View style={styles.dcRow}>
               <Text style={styles.dcText}>DC {classDC.value ?? '—'}</Text>
-              <ProficiencyIndicator rank={0} />
+              <ProficiencyIndicator rank={classDC.rank ?? 0} />
               <Text style={styles.breakdownText}>Wis{'\n'}{formatMod(sys?.abilities?.wis?.mod)}</Text>
               <Text style={styles.breakdownText}>Prof{'\n'}+0</Text>
               <Text style={styles.breakdownText}>Item{'\n'}+0</Text>
@@ -162,36 +153,11 @@ export default function SpellsTab({ character }: Props) {
       )}
 
       {/* Spell detail modal */}
-      <Modal visible={selected !== null} animationType="slide" transparent onRequestClose={() => setSelected(null)}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle} numberOfLines={2}>
-                {selected?.name ?? ''}
-              </Text>
-              <TouchableOpacity onPress={() => setSelected(null)} style={styles.closeBtn}>
-                <Text style={styles.closeBtnText}>✕</Text>
-              </TouchableOpacity>
-            </View>
-            {traits.length > 0 && (
-              <View style={styles.traitsRow}>
-                {traits.map((t) => (
-                  <View key={t} style={styles.traitBadge}>
-                    <Text style={styles.traitBadgeText}>{t}</Text>
-                  </View>
-                ))}
-              </View>
-            )}
-            <ScrollView style={styles.modalBody}>
-              {plainDesc ? (
-                <Text style={styles.modalDesc}>{plainDesc}</Text>
-              ) : (
-                <Text style={styles.modalDescMuted}>No description available.</Text>
-              )}
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
+      <ItemDetailModal
+        item={selected}
+        visible={selected !== null}
+        onClose={() => setSelected(null)}
+      />
     </ScrollView>
   );
 }
@@ -338,73 +304,5 @@ const styles = StyleSheet.create({
   emptyText: {
     color: Colors.textMuted,
     fontSize: FontSize.sm,
-  },
-  // Modal
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: Colors.surface,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    maxHeight: '80%',
-    borderTopWidth: 1,
-    borderColor: Colors.border,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    padding: Spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  modalTitle: {
-    flex: 1,
-    color: Colors.textPrimary,
-    fontSize: FontSize.xl,
-    fontWeight: 'bold',
-  },
-  closeBtn: {
-    padding: Spacing.xs,
-    marginLeft: Spacing.md,
-  },
-  closeBtnText: {
-    color: Colors.textMuted,
-    fontSize: FontSize.lg,
-  },
-  traitsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm,
-    gap: Spacing.xs,
-  },
-  traitBadge: {
-    backgroundColor: Colors.card,
-    borderRadius: 4,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 2,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  traitBadgeText: {
-    color: Colors.secondary,
-    fontSize: FontSize.xs,
-    textTransform: 'capitalize',
-  },
-  modalBody: {
-    padding: Spacing.lg,
-  },
-  modalDesc: {
-    color: Colors.textSecondary,
-    fontSize: FontSize.md,
-    lineHeight: 22,
-  },
-  modalDescMuted: {
-    color: Colors.textMuted,
-    fontSize: FontSize.sm,
-    fontStyle: 'italic',
   },
 });

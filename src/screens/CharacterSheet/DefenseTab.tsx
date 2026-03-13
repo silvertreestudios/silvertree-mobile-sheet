@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Colors, FontSize, Spacing } from '../../utils/theme';
 import { PF2eCharacter } from '../../types';
+import { formatMod } from '../../utils/formatters';
 import ProficiencyIndicator from '../../components/ProficiencyIndicator';
 import foundryApi from '../../api/foundryApi';
 import { useApp } from '../../contexts/AppContext';
@@ -16,11 +17,6 @@ import { useApp } from '../../contexts/AppContext';
 interface Props {
   character: PF2eCharacter;
   onRefresh: () => void;
-}
-
-function formatMod(n: number | undefined): string {
-  if (n === undefined || n === null) return '—';
-  return n >= 0 ? `+${n}` : `${n}`;
 }
 
 function getHpColor(current: number, max: number): string {
@@ -116,16 +112,16 @@ export default function DefenseTab({ character, onRefresh }: Props) {
       {saves && (
         <View style={styles.savesSection}>
           {[
-            { key: 'fortitude', label: 'Fortitude', save: saves.fortitude, ability: 'Con', abilityMod: sys?.abilities?.con?.mod },
-            { key: 'reflex', label: 'Reflex', save: saves.reflex, ability: 'Dex', abilityMod: sys?.abilities?.dex?.mod },
-            { key: 'will', label: 'Will', save: saves.will, ability: 'Wis', abilityMod: sys?.abilities?.wis?.mod },
-          ].map(({ key, label, save, ability, abilityMod }) => {
+            { key: 'fortitude', label: 'Fortitude', save: saves.fortitude, ability: 'Con', abilityMod: sys?.abilities?.con?.mod, rank: saves.fortitude?.rank },
+            { key: 'reflex', label: 'Reflex', save: saves.reflex, ability: 'Dex', abilityMod: sys?.abilities?.dex?.mod, rank: saves.reflex?.rank },
+            { key: 'will', label: 'Will', save: saves.will, ability: 'Wis', abilityMod: sys?.abilities?.wis?.mod, rank: saves.will?.rank },
+          ].map(({ key, label, save, ability, abilityMod, rank }) => {
             const mod = save?.totalModifier ?? save?.value ?? 0;
             return (
               <View key={key} style={styles.saveRow}>
                 <Text style={styles.d20}>⬡</Text>
                 <Text style={styles.saveName}>{label} {formatMod(mod)}</Text>
-                <ProficiencyIndicator rank={0} />
+                <ProficiencyIndicator rank={rank ?? 0} />
                 <Text style={styles.breakdownText}>{ability}{'\n'}{formatMod(abilityMod)}</Text>
                 <Text style={styles.breakdownText}>Prof{'\n'}{formatMod(mod - (abilityMod ?? 0))}</Text>
                 <Text style={styles.breakdownText}>Item{'\n'}+0</Text>

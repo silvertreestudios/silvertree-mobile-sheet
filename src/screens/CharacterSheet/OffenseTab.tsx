@@ -9,17 +9,13 @@ import {
 } from 'react-native';
 import { Colors, FontSize, Spacing } from '../../utils/theme';
 import { PF2eCharacter, PF2eItem } from '../../types';
+import { formatMod } from '../../utils/formatters';
 import ProficiencyIndicator from '../../components/ProficiencyIndicator';
 import foundryApi from '../../api/foundryApi';
 import { useApp } from '../../contexts/AppContext';
 
 interface Props {
   character: PF2eCharacter;
-}
-
-function formatMod(n: number | undefined): string {
-  if (n === undefined || n === null) return '—';
-  return n >= 0 ? `+${n}` : `${n}`;
 }
 
 export default function OffenseTab({ character }: Props) {
@@ -64,7 +60,7 @@ export default function OffenseTab({ character }: Props) {
                 Initiative Bonus +0
               </Text>
             </View>
-            <ProficiencyIndicator rank={0} />
+            <ProficiencyIndicator rank={perception.rank ?? 0} />
             <Text style={styles.breakdownText}>Wis{'\n'}{formatMod(sys?.abilities?.wis?.mod)}</Text>
             <Text style={styles.breakdownText}>Prof{'\n'}{formatMod((perception.totalModifier ?? 0) - (sys?.abilities?.wis?.mod ?? 0))}</Text>
             <Text style={styles.breakdownText}>Item{'\n'}+0</Text>
@@ -110,8 +106,9 @@ function WeaponCard({ weapon, character, onRoll }: { weapon: PF2eItem; character
   // Determine attack ability (finesse/ranged = dex, otherwise str)
   const isFinesse = traits.includes('finesse');
   const isRanged = traits.includes('ranged') || weapon.system?.slug?.includes('bow') || weapon.system?.slug?.includes('crossbow');
-  const attackAbility = isFinesse || isRanged ? 'Str' : 'Str';
-  const attackAbilityMod = sys?.abilities?.str?.mod ?? 0;
+  const attackAbility = isFinesse || isRanged ? 'Dex' : 'Str';
+  const abilityKey = attackAbility.toLowerCase() as 'str' | 'dex';
+  const attackAbilityMod = sys?.abilities?.[abilityKey]?.mod ?? 0;
 
   return (
     <View style={styles.weaponCard}>
@@ -162,10 +159,6 @@ function WeaponCard({ weapon, character, onRoll }: { weapon: PF2eItem; character
       </View>
     </View>
   );
-}
-
-function formatMod2(n: number): string {
-  return n >= 0 ? `+${n}` : `${n}`;
 }
 
 const styles = StyleSheet.create({

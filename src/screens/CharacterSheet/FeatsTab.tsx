@@ -69,10 +69,9 @@ export default function FeatsTab({ character }: Props) {
   const className = character.system?.details?.class?.value ?? 'Class';
   const featGroups = groupFeats(feats, className);
 
-  // Specials: actions, class features that aren't feats
+  // Specials: actions that aren't feats
   const specials = items.filter((i) =>
-    ['action', 'reaction', 'free', 'passive'].includes(i.type) ||
-    (i.type === 'classFeature' && !feats.includes(i))
+    ['action', 'reaction', 'free', 'passive'].includes(i.type)
   );
 
   return (

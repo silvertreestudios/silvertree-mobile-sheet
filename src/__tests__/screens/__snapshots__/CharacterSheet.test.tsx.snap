@@ -4141,17 +4141,6 @@ exports[`OffenseTab renders correctly 1`] = `
             Perception 
             +9
           </Text>
-          <Text
-            style={
-              {
-                "color": "#a0aec0",
-                "fontSize": 12,
-                "marginTop": 2,
-              }
-            }
-          >
-            Initiative Bonus +0
-          </Text>
         </View>
         <View
           style={

@@ -56,9 +56,6 @@ export default function OffenseTab({ character }: Props) {
               <Text style={styles.perceptionName}>
                 Perception {formatMod(perception.totalModifier)}
               </Text>
-              <Text style={styles.initiativeText}>
-                Initiative Bonus +0
-              </Text>
             </View>
             <ProficiencyIndicator rank={perception.rank ?? 0} />
             <Text style={styles.breakdownText}>Wis{'\n'}{formatMod(sys?.abilities?.wis?.mod)}</Text>
@@ -193,11 +190,6 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     fontSize: FontSize.md,
     fontWeight: 'bold',
-  },
-  initiativeText: {
-    color: Colors.textSecondary,
-    fontSize: FontSize.sm,
-    marginTop: 2,
   },
   breakdownText: {
     color: Colors.textMuted,

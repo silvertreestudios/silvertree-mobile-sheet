@@ -1,0 +1,110 @@
+#!/bin/bash
+# setup-local.sh — Bootstrap the local Podman E2E environment (Linux/Mac)
+#
+# Usage:
+#   chmod +x scripts/setup-local.sh
+#   ./scripts/setup-local.sh
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "${SCRIPT_DIR}")"
+RELAY_SRC_DIR="${PROJECT_ROOT}/docker/relay/src"
+
+echo "========================================"
+echo " Silver Tree Mobile — Local E2E Setup"
+echo "========================================"
+echo ""
+
+# ---------------------------------------------------------------------------
+# 1. Check prerequisites
+# ---------------------------------------------------------------------------
+echo "[setup] Checking prerequisites..."
+
+check_command() {
+    if ! command -v "$1" &> /dev/null; then
+        echo "  ✗ $1 not found. Please install $1."
+        return 1
+    else
+        echo "  ✓ $1 found: $(command -v "$1")"
+        return 0
+    fi
+}
+
+MISSING=0
+check_command podman || MISSING=1
+check_command podman-compose || check_command docker-compose || MISSING=1
+check_command git || MISSING=1
+check_command curl || MISSING=1
+check_command jq || MISSING=1
+
+if [ "${MISSING}" -ne 0 ]; then
+    echo ""
+    echo "[setup] ERROR: Missing prerequisites. Please install them and try again."
+    exit 1
+fi
+
+echo ""
+
+# ---------------------------------------------------------------------------
+# 2. Clone the relay server repository
+# ---------------------------------------------------------------------------
+echo "[setup] Setting up relay server source..."
+
+if [ -d "${RELAY_SRC_DIR}" ] && [ -f "${RELAY_SRC_DIR}/package.json" ]; then
+    echo "  Relay source already exists at ${RELAY_SRC_DIR}"
+    echo "  Pulling latest changes..."
+    cd "${RELAY_SRC_DIR}" && git pull --ff-only 2>/dev/null || echo "  (could not pull, using existing)"
+    cd "${PROJECT_ROOT}"
+else
+    echo "  Cloning ThreeHats/foundryvtt-rest-api-relay..."
+    rm -rf "${RELAY_SRC_DIR}"
+    git clone --depth 1 https://github.com/ThreeHats/foundryvtt-rest-api-relay.git "${RELAY_SRC_DIR}"
+fi
+
+echo ""
+
+# ---------------------------------------------------------------------------
+# 3. Create .env from template
+# ---------------------------------------------------------------------------
+echo "[setup] Setting up environment file..."
+
+if [ -f "${PROJECT_ROOT}/.env" ]; then
+    echo "  .env already exists, skipping"
+else
+    cp "${PROJECT_ROOT}/.env.example" "${PROJECT_ROOT}/.env"
+    echo "  Created .env from .env.example"
+    echo "  ⚠  Please edit .env and fill in your FoundryVTT credentials!"
+fi
+
+echo ""
+
+# ---------------------------------------------------------------------------
+# 4. Create worlds directory
+# ---------------------------------------------------------------------------
+echo "[setup] Setting up worlds directory..."
+
+mkdir -p "${PROJECT_ROOT}/docker/worlds"
+echo "  docker/worlds/ directory ready"
+echo "  Place your world snapshot folder here."
+
+echo ""
+
+# ---------------------------------------------------------------------------
+# Done
+# ---------------------------------------------------------------------------
+echo "========================================"
+echo " Setup complete!"
+echo "========================================"
+echo ""
+echo " Next steps:"
+echo "   1. Edit .env with your FoundryVTT credentials and license key"
+echo "   2. Place your world snapshot in docker/worlds/<world-name>/"
+echo "   3. Set FOUNDRY_WORLD=<world-name> in .env"
+echo "   4. Run: podman-compose up --build"
+echo "   5. Visit http://localhost:3010 to create a relay API key"
+echo "   6. Set RELAY_API_KEY=<key> in .env and restart"
+echo ""
+echo " Or run the seed script after starting:"
+echo "   ./docker/relay/seed-api-key.sh"
+echo ""

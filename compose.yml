@@ -1,0 +1,98 @@
+# compose.yml — Local Podman E2E environment (dev mode)
+#
+# Usage:
+#   podman-compose up --build        # Start all services
+#   podman-compose down              # Stop all services
+#   podman-compose down -v           # Stop and remove volumes
+#
+# Services:
+#   foundryvtt  — FoundryVTT server with REST API module (http://localhost:30000)
+#   relay       — REST API relay server (http://localhost:3010)
+#   mobile-app  — Expo web dev server (http://localhost:8081)
+
+services:
+  # --------------------------------------------------------------------------
+  # Relay Server — must start first (FoundryVTT module connects to it)
+  # --------------------------------------------------------------------------
+  relay:
+    build:
+      context: ./docker/relay
+      dockerfile: Dockerfile
+    container_name: relay
+    ports:
+      - "3010:3010"
+    environment:
+      PORT: "3010"
+      DB_TYPE: sqlite
+      NODE_ENV: development
+      FREE_API_REQUESTS_LIMIT: "999999999"
+      DAILY_REQUEST_LIMIT: "999999999"
+    volumes:
+      - relay-data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3010/"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  # --------------------------------------------------------------------------
+  # FoundryVTT — game server with REST API module pre-configured
+  # --------------------------------------------------------------------------
+  foundryvtt:
+    build:
+      context: ./docker/foundryvtt
+      dockerfile: Dockerfile
+    container_name: foundryvtt
+    ports:
+      - "30000:30000"
+    environment:
+      FOUNDRY_USERNAME: ${FOUNDRY_USERNAME}
+      FOUNDRY_PASSWORD: ${FOUNDRY_PASSWORD}
+      FOUNDRY_LICENSE_KEY: ${FOUNDRY_LICENSE_KEY}
+      FOUNDRY_WORLD: ${FOUNDRY_WORLD:-}
+      RELAY_URL: ${RELAY_URL:-ws://relay:3010/}
+      RELAY_API_KEY: ${RELAY_API_KEY:-}
+      # felddy/foundryvtt specific
+      FOUNDRY_ADMIN_KEY: admin
+      CONTAINER_PRESERVE_CONFIG: "true"
+    volumes:
+      - foundryvtt-data:/data
+      - ./docker/worlds:/data/Data/worlds
+    depends_on:
+      relay:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:30000"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+    restart: unless-stopped
+
+  # --------------------------------------------------------------------------
+  # Mobile App — Expo web dev server (hot reload via bind mount)
+  # --------------------------------------------------------------------------
+  mobile-app:
+    build:
+      context: .
+      dockerfile: docker/mobile-app/Dockerfile
+    container_name: mobile-app
+    ports:
+      - "8081:8081"
+    environment:
+      EXPO_PUBLIC_RELAY_URL: ${MOBILE_RELAY_URL:-http://localhost:3010}
+      EXPO_PUBLIC_API_KEY: ${RELAY_API_KEY:-}
+    volumes:
+      # Bind mount source for hot reload (dev mode)
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      relay:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  foundryvtt-data:
+  relay-data:

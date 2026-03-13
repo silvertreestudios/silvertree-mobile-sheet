@@ -75,3 +75,88 @@ The app communicates with the [FoundryVTT REST API Relay](https://foundryvtt-res
 | `POST /roll` | Perform a dice roll |
 
 All requests require the `x-api-key` header with your API key.
+
+## Local E2E Environment (Podman)
+
+A containerized setup for running the full stack locally — FoundryVTT, relay server, and the mobile app (web build) — for end-to-end testing against a known world snapshot.
+
+### Architecture
+
+```
+FoundryVTT (port 30000) ──WebSocket──► Relay Server (port 3010) ◄──REST── Mobile App (port 8081)
+```
+
+### Prerequisites
+
+- [Podman](https://podman.io/) and [podman-compose](https://github.com/containers/podman-compose) (or Docker/docker-compose)
+- Git
+- A [FoundryVTT](https://foundryvtt.com) license
+
+### Quick Start
+
+```bash
+# 1. Run the setup script (clones relay repo, creates .env)
+# Linux/Mac:
+chmod +x scripts/setup-local.sh && ./scripts/setup-local.sh
+# Windows:
+.\scripts\setup-local.ps1
+
+# 2. Edit .env with your FoundryVTT credentials and license key
+#    Set FOUNDRY_WORLD to your world folder name
+
+# 3. Place your world snapshot in docker/worlds/<world-name>/
+
+# 4. Start the stack
+podman-compose up --build
+
+# 5. First run only: create a relay API key
+#    Visit http://localhost:3010, create an account, generate a key
+#    OR run: bash docker/relay/seed-api-key.sh
+#    Then set RELAY_API_KEY=<key> in .env and restart
+
+# 6. Access the services
+#    FoundryVTT:  http://localhost:30000
+#    Relay:       http://localhost:3010
+#    Mobile App:  http://localhost:8081
+```
+
+### Production Mode (for E2E Tests)
+
+Uses a static Expo web export served by nginx instead of the dev server:
+
+```bash
+podman-compose -f compose.yml -f compose.prod.yml up --build
+```
+
+### Daily Commands
+
+```bash
+# Start (dev mode)
+podman-compose up
+
+# Start (production mode for e2e)
+podman-compose -f compose.yml -f compose.prod.yml up --build
+
+# Stop
+podman-compose down
+
+# Reset all data (volumes)
+podman-compose down -v
+
+# View logs
+podman-compose logs -f foundryvtt
+podman-compose logs -f relay
+podman-compose logs -f mobile-app
+```
+
+### Environment Variables
+
+See [`.env.example`](.env.example) for all configurable variables. Key ones:
+
+| Variable | Description |
+|----------|-------------|
+| `FOUNDRY_USERNAME` | FoundryVTT.com account username |
+| `FOUNDRY_PASSWORD` | FoundryVTT.com account password |
+| `FOUNDRY_LICENSE_KEY` | Your Foundry license key |
+| `FOUNDRY_WORLD` | World folder name to auto-launch |
+| `RELAY_API_KEY` | Shared API key for relay auth |

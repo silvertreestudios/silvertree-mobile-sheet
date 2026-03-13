@@ -31,7 +31,12 @@ yarn-error.*
 *.pem
 
 # local env files
+.env
 .env*.local
+
+# Local Podman E2E environment
+docker/worlds/
+docker/relay/src/
 
 # test coverage
 coverage/

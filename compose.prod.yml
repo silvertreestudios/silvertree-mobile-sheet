@@ -1,0 +1,19 @@
+# compose.prod.yml — Production override for e2e testing
+#
+# Usage:
+#   podman-compose -f compose.yml -f compose.prod.yml up --build
+#
+# Overrides the mobile-app service to use a production nginx build
+# instead of the Expo dev server.
+
+services:
+  mobile-app:
+    build:
+      context: .
+      dockerfile: docker/mobile-app/Dockerfile.prod
+      args:
+        EXPO_PUBLIC_RELAY_URL: ${MOBILE_RELAY_URL:-http://localhost:3010}
+        EXPO_PUBLIC_API_KEY: ${RELAY_API_KEY:-}
+    ports:
+      - "8081:80"
+    volumes: []

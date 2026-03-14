@@ -47,7 +47,7 @@ function useDeepLinkNavigation() {
 
         await waitForNav();
         navigationRef.reset({
-          index: 0,
+          index: 2,
           routes: [
             { name: 'Settings' },
             { name: 'CharacterSelect' },
@@ -55,7 +55,14 @@ function useDeepLinkNavigation() {
           ],
         });
       } catch {
-        // Fetch failed – fall through to the normal Settings screen
+        // Fetch failed – still navigate to CharacterSelect so user isn't stuck
+        navigationRef.reset({
+          index: 1,
+          routes: [
+            { name: 'Settings' },
+            { name: 'CharacterSelect' },
+          ],
+        });
       } finally {
         clearPendingShareNavigation();
       }

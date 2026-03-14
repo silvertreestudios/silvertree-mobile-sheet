@@ -96,7 +96,9 @@ Browser (GM session)
 
 ### Prerequisites
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (or Podman + podman-compose)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (or [Podman](https://podman.io/) + podman-compose)
+
+> **Note:** All commands below use `docker compose` (Docker Compose v2 plugin). If you're using Podman, substitute `podman-compose` wherever you see `docker compose`.
 - A [FoundryVTT](https://foundryvtt.com) license (username, password, and license key)
 - [Git LFS](https://git-lfs.github.com/) (for world snapshot binaries)
 
@@ -129,8 +131,7 @@ FOUNDRY_WORLD=pathfinder2e-test
 #### 3. Start the stack
 
 ```bash
-docker-compose up --build
-# or: podman-compose up --build
+docker compose up --build
 ```
 
 Wait for all three services to become healthy (relay starts first, then Foundry, then the mobile app). First build takes several minutes.
@@ -154,12 +155,12 @@ RELAY_API_KEY=your-generated-api-key
 Then restart so all services pick up the key:
 
 ```bash
-docker-compose down && docker-compose up -d
+docker compose down && docker compose up -d
 ```
 
 #### 5. First-time Foundry setup (browser)
 
-These steps are only needed the first time (or after `docker-compose down -v` which clears volumes):
+These steps are only needed the first time (or after `docker compose down -v` which clears volumes):
 
 1. **Open** http://localhost:30000 in your browser
 2. **Accept the EULA** / verify your license when prompted
@@ -173,7 +174,7 @@ These steps are only needed the first time (or after `docker-compose down -v` wh
    - **API Key** should match your `RELAY_API_KEY`
 6. **Stay logged in as GM** — the relay only has data access while a GM session is active
 
-> **Tip:** The entrypoint script auto-configures the module settings in the world database. However, on first run, Foundry may require you to manually enable the module and accept the license. After that, subsequent `docker-compose up` runs should work without browser interaction (as long as volumes are preserved).
+> **Tip:** The entrypoint script auto-configures the module settings in the world database. However, on first run, Foundry may require you to manually enable the module and accept the license. After that, subsequent `docker compose up` runs should work without browser interaction (as long as volumes are preserved).
 
 #### 6. Verify the connection
 
@@ -189,31 +190,31 @@ You should see a client with your `worldId` and `systemId`. See the [Relay API D
 Uses a static Expo web export served by nginx instead of the dev server:
 
 ```bash
-docker-compose -f compose.yml -f compose.prod.yml up --build
+docker compose -f compose.yml -f compose.prod.yml up --build
 ```
 
 ### Daily Commands
 
 ```bash
 # Start (dev mode, detached)
-docker-compose up -d
+docker compose up -d
 
 # Start (production mode for e2e)
-docker-compose -f compose.yml -f compose.prod.yml up --build
+docker compose -f compose.yml -f compose.prod.yml up --build
 
 # Stop (preserves volumes — world state, relay DB, etc.)
-docker-compose down
+docker compose down
 
 # Reset all data (removes volumes — clean slate for testing)
-docker-compose down -v
+docker compose down -v
 
 # View logs
-docker-compose logs -f foundryvtt
-docker-compose logs -f relay
-docker-compose logs -f mobile-app
+docker compose logs -f foundryvtt
+docker compose logs -f relay
+docker compose logs -f mobile-app
 
 # Rebuild a single service
-docker-compose up --build relay
+docker compose up --build relay
 ```
 
 ### World Snapshots
@@ -235,7 +236,7 @@ The included `pathfinder2e-test` world contains a single PF2e character ("Fighte
 
 | Problem | Solution |
 |---------|----------|
-| Relay container crashes with `sqlite3` error | The Dockerfile recompiles sqlite3 native bindings. If you see this, rebuild: `docker-compose build --no-cache relay` |
+| Relay container crashes with `sqlite3` error | The Dockerfile recompiles sqlite3 native bindings. If you see this, rebuild: `docker compose build --no-cache relay` |
 | Foundry shows "no such file or directory" on entrypoint | Shell scripts have Windows CRLF line endings. Run `git checkout -- docker/` or ensure `.gitattributes` enforces LF. |
 | `/clients` returns empty array | A GM must be logged into the Foundry world in a browser. The REST API module is client-side. |
 | Module relay URL uses `ws://relay:3010/` | Change to `ws://localhost:3010/` in Foundry module settings — the browser runs on the host, not inside Docker. |

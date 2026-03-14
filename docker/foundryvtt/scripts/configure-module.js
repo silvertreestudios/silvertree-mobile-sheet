@@ -58,8 +58,8 @@ function enableModuleInWorld() {
 
   const worldData = JSON.parse(fs.readFileSync(worldJsonPath, "utf-8"));
 
-  // Foundry v10+ uses "relationships.modules" array, older versions use "modules" array
-  // Handle both formats
+  // Foundry v10+ uses "relationships.modules" — ensure it exists and add our module.
+  // (Legacy pre-v10 top-level "modules" array is not supported; we target v13+.)
   if (worldData.relationships && Array.isArray(worldData.relationships.modules)) {
     const modules = worldData.relationships.modules;
     const existing = modules.find(
@@ -72,7 +72,7 @@ function enableModuleInWorld() {
       console.log(`[configure-module] Module ${moduleId} already in relationships.modules`);
     }
   } else {
-    // Legacy format or missing relationships
+    // relationships key missing or modules not an array — create it
     if (!worldData.relationships) {
       worldData.relationships = {};
     }

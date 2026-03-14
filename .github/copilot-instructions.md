@@ -67,3 +67,14 @@ npx jest --ci
 # Full validation (types + tests + snapshots)
 npm run validate
 ```
+
+## Pre-commit checklist
+
+Before every commit, review changes for:
+
+- **Leftover debug code** — remove `console.log`, `console.error`, `debugger`, or any temporary logging added during development
+- **Dead imports and unused code** — check that no removed features leave behind orphaned imports or unreferenced variables
+- **Stale documentation** — if files or directories were added/removed/renamed, update README.md, .env.example, .gitattributes, and copilot-instructions.md to match
+- **Stale config** — if file patterns changed (e.g., removing a directory), clean up related .gitignore, .gitattributes (LFS patterns), and CI config entries
+- **Consistent data formats** — verify IDs, UUIDs, and keys use the same format throughout (e.g., full `Actor.xxx` UUIDs, not a mix of short and long forms)
+- **Error handling** — ensure catch blocks don't silently swallow errors that should be surfaced or logged

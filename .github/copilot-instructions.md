@@ -28,7 +28,7 @@ Once set up, `docker compose up --build` in any worktree will reuse the existing
 
 Credentials are stored in a shared `.env` at the **parent directory** of all worktrees:
 ```
-C:\Users\Josh\.copilot\worktrees\silvertree-mobile-sheet\.env
+<worktree-parent>\.env
 ```
 
 The setup scripts (`scripts/setup-local.ps1` and `scripts/setup-local.sh`) automatically

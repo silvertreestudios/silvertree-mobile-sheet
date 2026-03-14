@@ -49,7 +49,9 @@ else
     echo "  ✗ No compose tool found. Install Docker Desktop, podman-compose, or docker-compose."
     MISSING=1
 fi
-[ -n "${COMPOSE_CMD}" ] && echo "  ✓ ${COMPOSE_CMD} found: $(command -v "${COMPOSE_CMD}")"
+if [ -n "${COMPOSE_CMD}" ]; then
+    echo "  ✓ Compose tool: ${COMPOSE_CMD}"
+fi
 
 if [ "${MISSING}" -ne 0 ]; then
     echo ""
@@ -84,13 +86,11 @@ fi
 echo ""
 
 # ---------------------------------------------------------------------------
-# 3. Create worlds directory
+# 3. Verify Docker volumes
 # ---------------------------------------------------------------------------
-echo "[setup] Setting up worlds directory..."
-
-mkdir -p "${PROJECT_ROOT}/docker/worlds"
-echo "  docker/worlds/ directory ready"
-echo "  Place your world snapshot folder here."
+echo "[setup] Docker named volumes will be created automatically on first run."
+echo "  - silvertree-foundryvtt-data (FoundryVTT data)"
+echo "  - silvertree-relay-data (Relay database)"
 
 echo ""
 
@@ -103,11 +103,10 @@ echo "========================================"
 echo ""
 echo " Next steps:"
 echo "   1. Edit .env with your FoundryVTT credentials and license key"
-echo "   2. Place your world snapshot in docker/worlds/<world-name>/"
-echo "   3. Set FOUNDRY_WORLD=<world-name> in .env"
-echo "   4. Run: ${COMPOSE_CMD} up --build"
-echo "   5. Visit http://localhost:3010 to create a relay API key"
-echo "   6. Set RELAY_API_KEY=<key> in .env and restart"
+echo "   2. Run: ${COMPOSE_CMD} up --build"
+echo "   3. Set up your world via the FoundryVTT UI at http://localhost:30000"
+echo "   4. Visit http://localhost:3010 to create a relay API key"
+echo "   5. Set RELAY_API_KEY=<key> in .env and restart"
 echo ""
 echo " Or run the seed script after starting:"
 echo "   ./docker/relay/seed-api-key.sh"

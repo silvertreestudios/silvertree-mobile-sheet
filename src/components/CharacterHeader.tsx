@@ -28,9 +28,11 @@ export default function CharacterHeader({ character }: CharacterHeaderProps) {
           title: `${character.name} – Silvertree Sheet`,
           url: shareUrl,
         });
-      } else if (Platform.OS === 'web') {
+      } else if (Platform.OS === 'web' && navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(shareUrl);
         Alert.alert('Link Copied', 'Character link copied to clipboard.');
+      } else if (Platform.OS === 'web') {
+        Alert.alert('Share Link', shareUrl);
       } else {
         await Share.share({
           title: `${character.name} – Silvertree Sheet`,

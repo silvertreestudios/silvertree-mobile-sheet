@@ -27,7 +27,8 @@ describe('shareLink', () => {
 
     it('returns null for valid base64 but missing fields', () => {
       // base64url of '{}'
-      const encoded = btoa('{}')
+      const encoded = Buffer.from('{}', 'utf8')
+        .toString('base64')
         .replace(/\+/g, '-')
         .replace(/\//g, '_')
         .replace(/=+$/, '');

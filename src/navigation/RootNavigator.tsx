@@ -27,14 +27,18 @@ function useDeepLinkNavigation() {
 
     handled.current = true;
 
+    let cancelled = false;
+
     (async () => {
-      // Wait for the navigator to be ready before doing anything
-      await new Promise<void>((resolve) => {
-        const check = () => {
-          if (navigationRef.isReady()) resolve();
-          else setTimeout(check, 50);
-        };
-        check();
+      // Wait for the navigator to be ready (max 5 s) before navigating
+      await new Promise<void>((resolve, reject) => {
+        if (navigationRef.isReady()) { resolve(); return; }
+        let poll: ReturnType<typeof setInterval>;
+        const timeout = setTimeout(() => { clearInterval(poll); reject(new Error('Navigation timeout')); }, 5000);
+        poll = setInterval(() => {
+          if (cancelled) { clearTimeout(timeout); clearInterval(poll); reject(new Error('Cancelled')); return; }
+          if (navigationRef.isReady()) { clearTimeout(timeout); clearInterval(poll); resolve(); }
+        }, 50);
       });
 
       try {
@@ -61,6 +65,8 @@ function useDeepLinkNavigation() {
         clearPendingShareNavigation();
       }
     })();
+
+    return () => { cancelled = true; };
   }, [pendingShareNavigation, config, clearPendingShareNavigation, setCharacter]);
 }
 

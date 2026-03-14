@@ -221,7 +221,7 @@ docker compose up --build relay
 
 World data is stored in the **`silvertree-foundryvtt-data`** Docker named volume, which persists across all branches and `docker compose down` (only removed with `docker compose down -v`). This means once you set up FoundryVTT with your world, it's available from any worktree.
 
-The repository's `docker/worlds/` directory contains a seed snapshot for bootstrapping. On first run, FoundryVTT will auto-download and configure itself; just log in and set up your world via the browser.
+On first run, FoundryVTT will auto-download and configure itself; just log in and set up your world via the browser.
 
 ### Troubleshooting
 

@@ -96,6 +96,17 @@ describe('FoundryApiService', () => {
       expect(result[0].name).toBe('Char');
     });
 
+    it('handles actors nested under entities.actors (relay v13 format)', async () => {
+      const actors = [
+        { _id: '1', name: 'Fighter', type: 'character' },
+        { _id: '2', name: 'The Party', type: 'party' },
+      ];
+      mockResponse({ data: { folders: {}, entities: { actors } } });
+      const result = await foundryApi.getActors();
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('Fighter');
+    });
+
     it('calls /structure with correct query params', async () => {
       mockResponse({ data: { entities: [] } });
       await foundryApi.getActors();

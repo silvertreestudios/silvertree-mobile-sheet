@@ -94,11 +94,24 @@ function WeaponCard({ weapon, character, onRoll }: { weapon: PF2eItem; character
   const damage = weapon.system?.damage;
   const traits = weapon.system?.traits?.value ?? [];
 
-  // Get first damage entry
-  const damageEntries = damage ? Object.values(damage) : [];
-  const primaryDamage = damageEntries[0];
-  const damageStr = primaryDamage?.damage ?? '—';
-  const damageType = primaryDamage?.damageType ?? '';
+  // Handle both v12 (map of {damage, damageType} entries) and v13 ({dice, die, damageType}) damage formats
+  let damageStr = '—';
+  let damageType = '';
+  if (damage) {
+    if (damage.die) {
+      // v13 source format: flat object with dice/die/damageType
+      damageStr = `${damage.dice ?? 1}${damage.die}`;
+      damageType = damage.damageType ?? '';
+    } else {
+      // v12 computed format: map of damage entries
+      const entries = Object.values(damage);
+      const primary = entries[0];
+      if (primary && typeof primary === 'object') {
+        damageStr = (primary as { damage?: string }).damage ?? '—';
+        damageType = (primary as { damageType?: string }).damageType ?? '';
+      }
+    }
+  }
 
   // Determine attack ability (finesse/ranged = dex, otherwise str)
   const isFinesse = traits.includes('finesse');

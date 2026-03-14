@@ -82,7 +82,7 @@ export interface PF2eItem {
     traits?: { value?: string[]; rarity?: string };
     actionType?: { value?: string };
     actions?: { value?: string | number };
-    damage?: { [key: string]: { category?: string; damage?: string; damageType?: string } };
+    damage?: { dice?: number; die?: string; damageType?: string; persistent?: unknown; [key: string]: unknown };
     bulk?: { value?: number };
     weight?: { value?: number };
     slug?: string;
@@ -153,6 +153,7 @@ export interface PF2eCharacter {
     };
     resources?: {
       focus?: { value?: number; max?: number };
+      heroPoints?: { value?: number; max?: number };
     };
     traits?: {
       value?: string[];

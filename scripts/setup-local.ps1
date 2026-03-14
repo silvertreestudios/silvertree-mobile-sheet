@@ -39,8 +39,16 @@ else { $Missing++ }
 
 $ComposeCmd = $null
 if (Get-Command "docker" -ErrorAction SilentlyContinue) {
-    # Docker Compose v2 plugin (preferred)
-    $ComposeCmd = "docker compose"
+    # Verify Docker Compose v2 plugin is available
+    $composeCheck = & docker compose version 2>&1
+    if ($LASTEXITCODE -eq 0) {
+        $ComposeCmd = "docker compose"
+    } elseif (Get-Command "docker-compose" -ErrorAction SilentlyContinue) {
+        $ComposeCmd = "docker-compose"
+    } else {
+        Write-Host "  ✗ Docker found but Compose plugin missing. Install Docker Desktop or docker-compose."
+        $Missing++
+    }
 } elseif (Get-Command "podman-compose" -ErrorAction SilentlyContinue) {
     $ComposeCmd = "podman-compose"
 } elseif (Get-Command "docker-compose" -ErrorAction SilentlyContinue) {

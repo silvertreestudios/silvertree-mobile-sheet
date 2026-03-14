@@ -40,7 +40,14 @@ fi
 
 COMPOSE_CMD=""
 if command -v docker &> /dev/null; then
-    COMPOSE_CMD="docker compose"
+    if docker compose version &> /dev/null; then
+        COMPOSE_CMD="docker compose"
+    elif command -v docker-compose &> /dev/null; then
+        COMPOSE_CMD="docker-compose"
+    else
+        echo "  ✗ Docker found but Compose plugin missing. Install Docker Desktop or docker-compose."
+        MISSING=1
+    fi
 elif command -v podman-compose &> /dev/null; then
     COMPOSE_CMD="podman-compose"
 elif command -v docker-compose &> /dev/null; then

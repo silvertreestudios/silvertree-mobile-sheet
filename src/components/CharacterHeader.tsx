@@ -20,7 +20,13 @@ export default function CharacterHeader({ character }: CharacterHeaderProps) {
   if (cls) titleParts.push(`${cls} ${level}`);
   const title = titleParts.join(' ');
 
+  const canShare = !!(config.apiKey && config.clientId && config.actorUuid);
+
   async function handleShare() {
+    if (!canShare) {
+      Alert.alert('Cannot Share', 'Connection settings are incomplete. Fill in relay URL, API key, and select a character first.');
+      return;
+    }
     const shareUrl = buildShareUrl(config);
     try {
       if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.share) {

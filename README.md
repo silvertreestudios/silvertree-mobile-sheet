@@ -219,17 +219,9 @@ docker compose up --build relay
 
 ### World Data
 
-World data is stored **outside the repository** at `~/.silvertree/worlds/` (configurable via `FOUNDRY_WORLDS_PATH` in `.env`). This means all git branches share the same Foundry worlds — no need to copy data between worktrees.
+World data is stored in the **`silvertree-foundryvtt-data`** Docker named volume, which persists across all branches and `docker compose down` (only removed with `docker compose down -v`). This means once you set up FoundryVTT with your world, it's available from any worktree.
 
-The repository's `docker/worlds/` directory contains a seed snapshot tracked with Git LFS. To bootstrap a fresh environment:
-
-```bash
-# Copy the seed world to the shared location (first time only)
-cp -r docker/worlds/pathfinder2e-test ~/.silvertree/worlds/
-
-# Or on Windows:
-Copy-Item docker\worlds\pathfinder2e-test $HOME\.silvertree\worlds\ -Recurse
-```
+The repository's `docker/worlds/` directory contains a seed snapshot for bootstrapping. On first run, FoundryVTT will auto-download and configure itself; just log in and set up your world via the browser.
 
 ### Troubleshooting
 
@@ -255,4 +247,3 @@ See [`.env.example`](.env.example) for all configurable variables. Key ones:
 | `RELAY_API_KEY` | Shared API key for relay authentication |
 | `RELAY_URL` | WebSocket URL for the REST API module (`ws://localhost:3010/`) |
 | `MOBILE_RELAY_URL` | REST URL the mobile app uses (`http://localhost:3010`) |
-| `FOUNDRY_WORLDS_PATH` | Host path to shared worlds directory (`~/.silvertree/worlds`) |

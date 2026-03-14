@@ -11,15 +11,18 @@
 .\scripts\setup-local.ps1   # Windows
 ./scripts/setup-local.sh     # Linux/Mac
 
-# Or manually:
-git lfs pull
-# Copy shared .env from the parent worktree directory if it exists,
-# otherwise copy .env.example and fill in credentials:
-cp ../.env .env   # shared .env lives one level above each worktree
-
 # Start the full stack (relay, FoundryVTT, mobile app)
 docker compose up --build
 ```
+
+### Persistent Docker volumes
+
+All state is stored in **global named Docker volumes** that persist across branches and worktrees:
+- `silvertree-foundryvtt-data` — FoundryVTT install, config, worlds, modules
+- `silvertree-relay-data` — Relay database (accounts, API keys)
+
+Once set up, `docker compose up --build` in any worktree will reuse the existing data.
+`docker compose down` preserves volumes; only `docker compose down -v` deletes them.
 
 ### Shared `.env` for worktrees
 

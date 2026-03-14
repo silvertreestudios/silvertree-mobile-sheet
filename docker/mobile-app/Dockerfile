@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 8081
 
 # Start Expo web dev server
-CMD ["npx", "expo", "start", "--web", "--port", "8081", "--host", "lan"]
+CMD ["npx", "expo", "start", "--web", "--port", "8081", "--host", "lan", "--clear"]

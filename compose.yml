@@ -87,6 +87,8 @@ services:
     environment:
       EXPO_PUBLIC_RELAY_URL: ${MOBILE_RELAY_URL:-http://localhost:3010}
       EXPO_PUBLIC_API_KEY: ${RELAY_API_KEY:-}
+      # Ensure Metro detects file changes through Docker bind mounts on Windows
+      CHOKIDAR_USEPOLLING: "true"
     volumes:
       # Bind mount source for hot reload (dev mode)
       - .:/app

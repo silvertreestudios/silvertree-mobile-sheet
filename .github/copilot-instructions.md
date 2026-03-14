@@ -53,6 +53,7 @@ copy this shared `.env` into the current worktree if no local `.env` exists.
 - The FoundryVTT REST API module runs **client-side in the GM's browser**, connecting to the relay at `ws://localhost:3010/`.
 - If `.env` is missing credentials, prompt the user to fill them in before starting Docker.
 - For production/E2E testing, use: `docker compose -f compose.yml -f compose.prod.yml up --build`
+- The mobile-app container uses `--clear` to reset Metro's bundler cache on each start, and `CHOKIDAR_USEPOLLING=true` for reliable file watching through Docker bind mounts on Windows. If code changes aren't reflected in the browser, restart the container: `docker compose restart mobile-app`
 
 ## Testing
 

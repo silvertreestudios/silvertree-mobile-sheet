@@ -54,11 +54,16 @@ class FoundryApiService {
     });
     if (!resp.ok) throw new Error(`Failed to list actors: ${resp.status}`);
     const body = await resp.json();
-    // entities may be an array or a plain-object keyed by uuid/name
-    const rawEntities = body?.data?.entities ?? body?.entities ?? [];
+    // The relay nests actors under data.entities.actors (array).
+    // Fall back to data.entities or entities for other response shapes.
+    const rawEntities =
+      body?.data?.entities?.actors ??
+      body?.data?.entities ??
+      body?.entities ??
+      [];
     const entities: PF2eCharacter[] = Array.isArray(rawEntities)
       ? rawEntities
-      : (Object.keys(rawEntities) as string[]).map((k) => (rawEntities as Record<string, PF2eCharacter>)[k]);
+      : Object.values(rawEntities).flat() as PF2eCharacter[];
     return entities.filter((a) => a.type === 'character');
   }
 

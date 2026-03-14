@@ -48,7 +48,7 @@ function useDeepLinkNavigation() {
             { name: 'CharacterSheet', params: { character: actor } },
           ],
         });
-      } catch {
+      } catch (err) {
         // Fetch failed – navigate to CharacterSelect so user isn't stuck on Settings
         navigationRef.reset({
           index: 1,

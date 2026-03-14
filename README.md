@@ -217,20 +217,19 @@ docker compose logs -f mobile-app
 docker compose up --build relay
 ```
 
-### World Snapshots
+### World Data
 
-World data lives in `docker/worlds/` and is bind-mounted into the Foundry container. Binary files (LevelDB, images, etc.) are tracked with **Git LFS**.
+World data is stored **outside the repository** at `~/.silvertree/worlds/` (configurable via `FOUNDRY_WORLDS_PATH` in `.env`). This means all git branches share the same Foundry worlds — no need to copy data between worktrees.
+
+The repository's `docker/worlds/` directory contains a seed snapshot tracked with Git LFS. To bootstrap a fresh environment:
 
 ```bash
-# After creating/modifying a world in Foundry, commit the snapshot:
-git add docker/worlds/
-git commit -m "feat: update world snapshot"
+# Copy the seed world to the shared location (first time only)
+cp -r docker/worlds/pathfinder2e-test ~/.silvertree/worlds/
 
-# After pulling, ensure LFS files are downloaded:
-git lfs pull
+# Or on Windows:
+Copy-Item docker\worlds\pathfinder2e-test $HOME\.silvertree\worlds\ -Recurse
 ```
-
-The included `pathfinder2e-test` world contains a single PF2e character ("Fighter") for E2E testing.
 
 ### Troubleshooting
 
@@ -256,3 +255,4 @@ See [`.env.example`](.env.example) for all configurable variables. Key ones:
 | `RELAY_API_KEY` | Shared API key for relay authentication |
 | `RELAY_URL` | WebSocket URL for the REST API module (`ws://localhost:3010/`) |
 | `MOBILE_RELAY_URL` | REST URL the mobile app uses (`http://localhost:3010`) |
+| `FOUNDRY_WORLDS_PATH` | Host path to shared worlds directory (`~/.silvertree/worlds`) |

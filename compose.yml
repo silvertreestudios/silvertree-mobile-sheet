@@ -59,7 +59,7 @@ services:
       CONTAINER_PRESERVE_CONFIG: "true"
     volumes:
       - foundryvtt-data:/data
-      - ./docker/worlds:/data/Data/worlds
+      - ${FOUNDRY_WORLDS_PATH:-~/.silvertree/worlds}:/data/Data/worlds
     depends_on:
       relay:
         condition: service_healthy

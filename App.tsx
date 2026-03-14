@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 import { AppProvider } from './src/contexts/AppContext';
 import RootNavigator from './src/navigation/RootNavigator';
+import { navigationRef } from './src/navigation/navigationRef';
 import { Colors } from './src/utils/theme';
 
 export default function App() {
@@ -13,7 +14,7 @@ export default function App() {
     <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
         <AppProvider>
-          <NavigationContainer>
+          <NavigationContainer ref={navigationRef}>
             <StatusBar style="light" backgroundColor={Colors.surface} />
             <RootNavigator />
           </NavigationContainer>

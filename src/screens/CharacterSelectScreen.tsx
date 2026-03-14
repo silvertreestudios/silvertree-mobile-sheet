@@ -48,7 +48,7 @@ export default function CharacterSelectScreen() {
   }, [fetchCharacters]);
 
   async function handleSelect(character: PF2eCharacter) {
-    await updateConfig({ actorUuid: character._id });
+    await updateConfig({ actorUuid: `Actor.${character._id}` });
     setCharacter(character);
     navigation.navigate('CharacterSheet', { character });
   }

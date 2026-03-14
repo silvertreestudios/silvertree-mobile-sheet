@@ -1,9 +1,13 @@
-# compose.yml — Local Podman E2E environment (dev mode)
+# compose.yml — Local Docker E2E environment (dev mode)
 #
 # Usage:
-#   podman-compose up --build        # Start all services
-#   podman-compose down              # Stop all services
-#   podman-compose down -v           # Stop and remove volumes
+#   docker compose up --build        # Start all services
+#   docker compose down              # Stop all services (volumes persist)
+#   docker compose down -v           # Stop and DELETE all data (clean slate)
+#
+# Persistent named volumes (shared across all worktrees/branches):
+#   silvertree-foundryvtt-data  — FoundryVTT install, config, worlds, modules
+#   silvertree-relay-data       — Relay server database (accounts, API keys)
 #
 # Services:
 #   foundryvtt  — FoundryVTT server with REST API module (http://localhost:30000)
@@ -28,7 +32,7 @@ services:
       FREE_API_REQUESTS_LIMIT: "999999999"
       DAILY_REQUEST_LIMIT: "999999999"
     volumes:
-      - relay-data:/app/data
+      - silvertree-relay-data:/app/data
     healthcheck:
       test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3010/', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))\""]
       interval: 10s
@@ -58,8 +62,7 @@ services:
       FOUNDRY_ADMIN_KEY: ${FOUNDRY_ADMIN_KEY:-admin}
       CONTAINER_PRESERVE_CONFIG: "true"
     volumes:
-      - foundryvtt-data:/data
-      - ./docker/worlds:/data/Data/worlds
+      - silvertree-foundryvtt-data:/data
     depends_on:
       relay:
         condition: service_healthy
@@ -84,6 +87,8 @@ services:
     environment:
       EXPO_PUBLIC_RELAY_URL: ${MOBILE_RELAY_URL:-http://localhost:3010}
       EXPO_PUBLIC_API_KEY: ${RELAY_API_KEY:-}
+      # Ensure Metro detects file changes through Docker bind mounts on Windows
+      CHOKIDAR_USEPOLLING: "true"
     volumes:
       # Bind mount source for hot reload (dev mode)
       - .:/app
@@ -94,5 +99,7 @@ services:
     restart: unless-stopped
 
 volumes:
-  foundryvtt-data:
-  relay-data:
+  silvertree-foundryvtt-data:
+    name: silvertree-foundryvtt-data
+  silvertree-relay-data:
+    name: silvertree-relay-data

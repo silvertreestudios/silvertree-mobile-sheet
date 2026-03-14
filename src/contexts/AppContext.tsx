@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { AppConfig, PF2eCharacter } from '../types';
 import { loadConfig, saveConfig } from '../utils/storage';
 import foundryApi from '../api/foundryApi';
+import { getShareParamsFromUrl, clearShareParamsFromUrl } from '../utils/shareLink';
 
 interface AppContextValue {
   config: AppConfig;
@@ -12,6 +13,8 @@ interface AppContextValue {
   isLoading: boolean;
   error: string | null;
   clearError: () => void;
+  pendingShareNavigation: boolean;
+  clearPendingShareNavigation: () => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -26,12 +29,26 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [character, setCharacter] = useState<PF2eCharacter | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pendingShareNavigation, setPendingShareNavigation] = useState(false);
 
   useEffect(() => {
-    loadConfig().then((cfg) => {
-      setConfig(cfg);
-      foundryApi.setConfig(cfg);
-    });
+    async function init() {
+      const savedConfig = await loadConfig();
+      const shareConfig = await getShareParamsFromUrl();
+
+      if (shareConfig) {
+        // Share link params take precedence over saved config
+        setConfig(shareConfig);
+        foundryApi.setConfig(shareConfig);
+        await saveConfig(shareConfig);
+        clearShareParamsFromUrl();
+        setPendingShareNavigation(true);
+      } else {
+        setConfig(savedConfig);
+        foundryApi.setConfig(savedConfig);
+      }
+    }
+    init();
   }, []);
 
   const updateConfig = useCallback(async (partial: Partial<AppConfig>) => {
@@ -56,6 +73,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [config.actorUuid, config.clientId]);
 
   const clearError = useCallback(() => setError(null), []);
+  const clearPendingShareNavigation = useCallback(() => setPendingShareNavigation(false), []);
 
   return (
     <AppContext.Provider
@@ -68,6 +86,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         error,
         clearError,
+        pendingShareNavigation,
+        clearPendingShareNavigation,
       }}
     >
       {children}

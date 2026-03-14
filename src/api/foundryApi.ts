@@ -73,7 +73,7 @@ class FoundryApiService {
   async getActor(uuid: string): Promise<PF2eCharacter> {
     const params = new URLSearchParams({
       clientId: this.config.clientId,
-      uuid,
+      uuid: this.ensureActorUuid(uuid),
     });
     const resp = await fetch(`${this.baseUrl}/get?${params}`, {
       headers: this.headers,
@@ -84,13 +84,17 @@ class FoundryApiService {
     return (body?.data ?? body) as PF2eCharacter;
   }
 
+  private ensureActorUuid(uuid: string): string {
+    return uuid.includes('.') ? uuid : `Actor.${uuid}`;
+  }
+
   /** Update an actor's data.
    *  Body must be { data: { ...updates } } per the relay schema.
    */
   async updateActor(uuid: string, updates: Record<string, unknown>): Promise<void> {
     const params = new URLSearchParams({
       clientId: this.config.clientId,
-      uuid,
+      uuid: this.ensureActorUuid(uuid),
     });
     const resp = await fetch(`${this.baseUrl}/update?${params}`, {
       method: 'PUT',
@@ -120,7 +124,7 @@ class FoundryApiService {
    *  clientId + uuid are query params; attribute + amount are body params.
    */
   async increaseAttribute(uuid: string, attribute: string, amount: number): Promise<void> {
-    const params = new URLSearchParams({ clientId: this.config.clientId, uuid });
+    const params = new URLSearchParams({ clientId: this.config.clientId, uuid: this.ensureActorUuid(uuid) });
     const resp = await fetch(`${this.baseUrl}/increase?${params}`, {
       method: 'POST',
       headers: this.headers,
@@ -133,7 +137,7 @@ class FoundryApiService {
    *  clientId + uuid are query params; attribute + amount are body params.
    */
   async decreaseAttribute(uuid: string, attribute: string, amount: number): Promise<void> {
-    const params = new URLSearchParams({ clientId: this.config.clientId, uuid });
+    const params = new URLSearchParams({ clientId: this.config.clientId, uuid: this.ensureActorUuid(uuid) });
     const resp = await fetch(`${this.baseUrl}/decrease?${params}`, {
       method: 'POST',
       headers: this.headers,

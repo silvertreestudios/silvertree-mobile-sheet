@@ -217,20 +217,11 @@ docker compose logs -f mobile-app
 docker compose up --build relay
 ```
 
-### World Snapshots
+### World Data
 
-World data lives in `docker/worlds/` and is bind-mounted into the Foundry container. Binary files (LevelDB, images, etc.) are tracked with **Git LFS**.
+World data is stored in the **`silvertree-foundryvtt-data`** Docker named volume, which persists across all branches and `docker compose down` (only removed with `docker compose down -v`). This means once you set up FoundryVTT with your world, it's available from any worktree.
 
-```bash
-# After creating/modifying a world in Foundry, commit the snapshot:
-git add docker/worlds/
-git commit -m "feat: update world snapshot"
-
-# After pulling, ensure LFS files are downloaded:
-git lfs pull
-```
-
-The included `pathfinder2e-test` world contains a single PF2e character ("Fighter") for E2E testing.
+On first run, FoundryVTT will auto-download and configure itself; just log in and set up your world via the browser.
 
 ### Troubleshooting
 

@@ -32,14 +32,21 @@ function Test-Prerequisite {
     }
 }
 
-if (-not (Test-Prerequisite "podman")) { $Missing++ }
+$HasContainer = $false
+if (Test-Prerequisite "docker") { $HasContainer = $true }
+elseif (Test-Prerequisite "podman") { $HasContainer = $true }
+else { $Missing++ }
+
 $ComposeCmd = $null
-if (Get-Command "podman-compose" -ErrorAction SilentlyContinue) {
+if (Get-Command "docker" -ErrorAction SilentlyContinue) {
+    # Docker Compose v2 plugin (preferred)
+    $ComposeCmd = "docker compose"
+} elseif (Get-Command "podman-compose" -ErrorAction SilentlyContinue) {
     $ComposeCmd = "podman-compose"
 } elseif (Get-Command "docker-compose" -ErrorAction SilentlyContinue) {
     $ComposeCmd = "docker-compose"
 } else {
-    Write-Host "  ✗ No compose tool found. Install podman-compose or docker-compose."
+    Write-Host "  ✗ No compose tool found. Install Docker Desktop, podman-compose, or docker-compose."
     $Missing++
 }
 
@@ -52,19 +59,28 @@ if ($Missing -gt 0) {
 Write-Host ""
 
 # ---------------------------------------------------------------------------
-# 2. Create .env from template
+# 2. Create .env — prefer shared worktree-level .env, then fall back to template
 # ---------------------------------------------------------------------------
 Write-Host "[setup] Setting up environment file..."
 
 $EnvFile = Join-Path $ProjectRoot ".env"
 $EnvExample = Join-Path $ProjectRoot ".env.example"
+# Shared .env lives one level above each worktree checkout
+$SharedEnv = Join-Path (Split-Path -Parent $ProjectRoot) ".env"
 
 if (Test-Path $EnvFile) {
     Write-Host "  .env already exists, skipping"
+} elseif (Test-Path $SharedEnv) {
+    Copy-Item $SharedEnv $EnvFile
+    Write-Host "  Copied shared .env from $SharedEnv"
 } else {
     Copy-Item $EnvExample $EnvFile
     Write-Host "  Created .env from .env.example"
     Write-Host "  ⚠  Please edit .env and fill in your FoundryVTT credentials!"
+    Write-Host ""
+    Write-Host "  TIP: Save a filled-in .env to the parent worktree directory:"
+    Write-Host "    $SharedEnv"
+    Write-Host "  It will be automatically copied into future worktrees."
 }
 
 Write-Host ""

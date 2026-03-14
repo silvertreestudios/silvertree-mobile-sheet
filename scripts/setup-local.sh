@@ -31,14 +31,22 @@ check_command() {
 }
 
 MISSING=0
-check_command podman || MISSING=1
+HAS_CONTAINER=0
+check_command docker && HAS_CONTAINER=1
+if [ "${HAS_CONTAINER}" -eq 0 ]; then
+    check_command podman && HAS_CONTAINER=1
+fi
+[ "${HAS_CONTAINER}" -eq 0 ] && MISSING=1
+
 COMPOSE_CMD=""
-if command -v podman-compose &> /dev/null; then
+if command -v docker &> /dev/null; then
+    COMPOSE_CMD="docker compose"
+elif command -v podman-compose &> /dev/null; then
     COMPOSE_CMD="podman-compose"
 elif command -v docker-compose &> /dev/null; then
     COMPOSE_CMD="docker-compose"
 else
-    echo "  ✗ No compose tool found. Install podman-compose or docker-compose."
+    echo "  ✗ No compose tool found. Install Docker Desktop, podman-compose, or docker-compose."
     MISSING=1
 fi
 [ -n "${COMPOSE_CMD}" ] && echo "  ✓ ${COMPOSE_CMD} found: $(command -v "${COMPOSE_CMD}")"
@@ -52,16 +60,25 @@ fi
 echo ""
 
 # ---------------------------------------------------------------------------
-# 2. Create .env from template
+# 2. Create .env — prefer shared worktree-level .env, then fall back to template
 # ---------------------------------------------------------------------------
 echo "[setup] Setting up environment file..."
 
+SHARED_ENV="$(dirname "${PROJECT_ROOT}")/.env"
+
 if [ -f "${PROJECT_ROOT}/.env" ]; then
     echo "  .env already exists, skipping"
+elif [ -f "${SHARED_ENV}" ]; then
+    cp "${SHARED_ENV}" "${PROJECT_ROOT}/.env"
+    echo "  Copied shared .env from ${SHARED_ENV}"
 else
     cp "${PROJECT_ROOT}/.env.example" "${PROJECT_ROOT}/.env"
     echo "  Created .env from .env.example"
     echo "  ⚠  Please edit .env and fill in your FoundryVTT credentials!"
+    echo ""
+    echo "  TIP: Save a filled-in .env to the parent worktree directory:"
+    echo "    ${SHARED_ENV}"
+    echo "  It will be automatically copied into future worktrees."
 fi
 
 echo ""

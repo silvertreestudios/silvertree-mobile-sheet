@@ -28,24 +28,18 @@ function useDeepLinkNavigation() {
     handled.current = true;
 
     (async () => {
+      // Wait for the navigator to be ready before doing anything
+      await new Promise<void>((resolve) => {
+        const check = () => {
+          if (navigationRef.isReady()) resolve();
+          else setTimeout(check, 50);
+        };
+        check();
+      });
+
       try {
         const actor = await foundryApi.getActor(config.actorUuid);
         setCharacter(actor);
-
-        // Wait briefly for the navigator to be ready
-        const waitForNav = () =>
-          new Promise<void>((resolve) => {
-            const check = () => {
-              if (navigationRef.isReady()) {
-                resolve();
-              } else {
-                setTimeout(check, 50);
-              }
-            };
-            check();
-          });
-
-        await waitForNav();
         navigationRef.reset({
           index: 2,
           routes: [
@@ -55,7 +49,7 @@ function useDeepLinkNavigation() {
           ],
         });
       } catch {
-        // Fetch failed – still navigate to CharacterSelect so user isn't stuck
+        // Fetch failed – navigate to CharacterSelect so user isn't stuck on Settings
         navigationRef.reset({
           index: 1,
           routes: [
